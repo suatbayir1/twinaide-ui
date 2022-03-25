@@ -1,13 +1,24 @@
+// Libraries
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+import { Provider } from "react-redux";
+
+// Components
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import store from './store/store'
+
+// CSS
+import './index.css';
+import 'react-notifications/lib/notifications.css';
+import '@influxdata/clockface/dist/index.css';
+import './style/SignInForm.scss';
+import './style/SignUpForm.scss';
 
 ReactDOM.render(
-  <React.StrictMode>
+  <Provider store={store}>
     <App />
-  </React.StrictMode>,
+  </Provider>,
   document.getElementById('root')
 );
 

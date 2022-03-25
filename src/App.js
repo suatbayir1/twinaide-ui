@@ -1,25 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+// Libraries
+import React, { Component } from 'react'
+import { Router, Route, Switch } from "react-router-dom";
+import { NotificationContainer } from 'react-notifications';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+// Helpers
+import { history } from "./history";
+
+// Layouts
+import AuthLayout from './layouts/AuthLayout'
+import UserLayout from './layouts/UserLayout';
+
+// Containers
+// import OverlayContainer from "./shared/containers/OverlayContainer";
+
+// HOC
+import PrivateRoute from "./router/PrivateRoute";
+
+class App extends Component {
+  render() {
+    return (
+      <>
+        <NotificationContainer />
+        {/* <OverlayContainer /> */}
+        <Router history={history}>
+          <Switch>
+            <Route exact path="/sign-in" component={AuthLayout} />
+            <Route exact path="/sign-up" component={AuthLayout} />
+            <PrivateRoute path="/" component={UserLayout} />
+          </Switch>
+        </Router>
+      </>
+    )
+  }
 }
 
-export default App;
+export default App
