@@ -12,6 +12,9 @@ import Copyright from '../components/Copyright';
 // Actions
 import { fetchLogin } from "../../store";
 
+// Helpers
+import { validateEmail, isPasswordValid } from "../../shared/helpers/FormValidator";
+
 // Material UI
 import { withStyles } from "@material-ui/core/styles";
 import Link from '@material-ui/core/Link';
@@ -67,7 +70,11 @@ class SignIn extends Component {
                                 <Grid>
                                     <Grid.Row>
                                         <Grid.Column widthXS={Columns.Twelve}>
-                                            <Form.Element label="Email">
+                                            <Form.Element
+                                                label="Email"
+                                                required={true}
+                                                errorMessage={validateEmail(email)}
+                                            >
                                                 <Input
                                                     name="email"
                                                     value={email}
@@ -80,7 +87,11 @@ class SignIn extends Component {
                                         </Grid.Column>
 
                                         <Grid.Column widthXS={Columns.Twelve}>
-                                            <Form.Element label="Password">
+                                            <Form.Element
+                                                label="Password"
+                                                required={true}
+                                                errorMessage={isPasswordValid(password)}
+                                            >
                                                 <Input
                                                     name="password"
                                                     value={password}

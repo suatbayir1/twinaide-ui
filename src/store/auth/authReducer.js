@@ -1,5 +1,5 @@
 // TYPES
-import { LOGIN, LOADING } from "./authTypes";
+import { LOGIN, LOADING, SIGNUP, LOGOUT } from "./authTypes";
 
 const initialState = {
     token: "",
@@ -19,6 +19,18 @@ const authReducer = (state = initialState, action) => {
             return {
                 ...state,
                 isLoading: action.payload,
+            }
+        case SIGNUP:
+            return {
+                ...state,
+                token: action.payload.token,
+                user: action.payload.user
+            }
+        case LOGOUT:
+            return {
+                ...state,
+                token: "",
+                user: {}
             }
         default:
             return state;

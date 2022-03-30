@@ -1,16 +1,20 @@
 // Libraries
 import React, { Component } from 'react'
 import { connect } from "react-redux";
+import { NotificationManager } from 'react-notifications';
 
 // Components
 import {
     Panel, AlignItems, FunnelPage, AppWrapper, Columns, InputType, Grid,
-    ButtonType, ComponentSize, ComponentColor, Form, Input, Button,
+    ButtonType, ComponentSize, ComponentColor, Form, Input, Button, SelectDropdown,
 } from '@influxdata/clockface'
 import Copyright from '../components/Copyright';
 
+// Helpers
+import { handleValidation, validateEmail, isPasswordValid, isPasswordMatched } from "../../shared/helpers/FormValidator";
+
 // Actions
-// import { fetchSignup } from "../../store";
+import { fetchSignup } from "../../store";
 
 // Material UI
 import { withStyles } from "@material-ui/core/styles";
@@ -42,22 +46,59 @@ class SignUp extends Component {
         super(props);
 
         this.state = {
-            firstname: "",
-            lastname: "",
+            name: "",
+            role: "user",
+            roles: ["user", "admin"],
             email: "",
-            username: "",
             password: "",
+            passwordRepeat: "",
         }
     }
 
     handleSignUp = async () => {
-        const { firstname, lastname, email, username, password } = this.state;
+        const { name, role, email, password, passwordRepeat } = this.state;
 
-        await this.props.fetchSignup({ firstname, lastname, email, username, password, "role": "member" });
+        const nameValidationResult = handleValidation(name);
+        const roleValidationResult = handleValidation(role);
+        const emailValidationResult = validateEmail(email);
+        const passwordValidationResult = isPasswordValid(password);
+        const passwordRepeatValidationResult = isPasswordMatched(password, passwordRepeat);
+
+        if (nameValidationResult) {
+            NotificationManager.error(`name: ${nameValidationResult}`, 'Error', 3000);
+            return;
+        }
+
+        if (roleValidationResult) {
+            NotificationManager.error(`role: ${roleValidationResult}`, 'Error', 3000);
+            return;
+        }
+
+        if (emailValidationResult) {
+            NotificationManager.error(`Email: ${emailValidationResult}`, 'Error', 3000);
+            return;
+        }
+
+        if (passwordValidationResult) {
+            NotificationManager.error(`Password: ${passwordValidationResult}`, 'Error', 3000);
+            return;
+        }
+
+        if (passwordRepeatValidationResult) {
+            NotificationManager.error(`Password repeat: ${passwordRepeatValidationResult}`, 'Error', 3000);
+            return;
+        }
+
+        await this.props.fetchSignup({
+            name,
+            email,
+            role,
+            password,
+        });
     }
 
     render() {
-        const { firstname, lastname, email, username, password } = this.state;
+        const { name, role, roles, email, password, passwordRepeat } = this.state;
 
         return (
             <AppWrapper>
@@ -70,28 +111,40 @@ class SignUp extends Component {
                                 <Grid>
                                     <Grid.Row>
                                         <Grid.Column widthXS={Columns.Six}>
-                                            <Form.Element label="First Name">
+                                            <Form.Element
+                                                label="Name"
+                                                required={true}
+                                                errorMessage={handleValidation(name)}
+                                            >
                                                 <Input
-                                                    name="firstname"
-                                                    onChange={(e) => { this.setState({ firstname: e.target.value }) }}
+                                                    name="name"
+                                                    onChange={(e) => { this.setState({ name: e.target.value }) }}
                                                     size={ComponentSize.Medium}
                                                     autoFocus={true}
-                                                    value={firstname}
+                                                    value={name}
                                                 />
                                             </Form.Element>
                                         </Grid.Column>
                                         <Grid.Column widthXS={Columns.Six}>
-                                            <Form.Element label="Last Name">
-                                                <Input
-                                                    name="lastname"
-                                                    onChange={(e) => { this.setState({ lastname: e.target.value }) }}
-                                                    size={ComponentSize.Medium}
-                                                    value={lastname}
+                                            <Form.Element
+                                                label="Role"
+                                                required={true}
+                                                errorMessage={handleValidation(role)}
+                                            >
+                                                <SelectDropdown
+                                                    options={roles}
+                                                    selectedOption={role}
+                                                    onSelect={(e) => { this.setState({ role: e }) }}
+                                                    buttonSize={ComponentSize.Medium}
                                                 />
                                             </Form.Element>
                                         </Grid.Column>
                                         <Grid.Column widthXS={Columns.Twelve}>
-                                            <Form.Element label="Email">
+                                            <Form.Element
+                                                label="Email"
+                                                required={true}
+                                                errorMessage={validateEmail(email)}
+                                            >
                                                 <Input
                                                     name="email"
                                                     onChange={(e) => { this.setState({ email: e.target.value }) }}
@@ -102,22 +155,31 @@ class SignUp extends Component {
                                             </Form.Element>
                                         </Grid.Column>
                                         <Grid.Column widthXS={Columns.Six}>
-                                            <Form.Element label="Username">
-                                                <Input
-                                                    name="username"
-                                                    onChange={(e) => { this.setState({ username: e.target.value }) }}
-                                                    size={ComponentSize.Medium}
-                                                    value={username}
-                                                />
-                                            </Form.Element>
-                                        </Grid.Column>
-                                        <Grid.Column widthXS={Columns.Six}>
-                                            <Form.Element label="Password">
+                                            <Form.Element
+                                                label="Password"
+                                                required={true}
+                                                errorMessage={isPasswordValid(password)}
+                                            >
                                                 <Input
                                                     name="password"
                                                     onChange={(e) => { this.setState({ password: e.target.value }) }}
                                                     size={ComponentSize.Medium}
                                                     value={password}
+                                                    type={InputType.Password}
+                                                />
+                                            </Form.Element>
+                                        </Grid.Column>
+                                        <Grid.Column widthXS={Columns.Six}>
+                                            <Form.Element
+                                                label="Password Repeat"
+                                                required={true}
+                                                errorMessage={isPasswordMatched(password, passwordRepeat)}
+                                            >
+                                                <Input
+                                                    name="passwordRepeat"
+                                                    onChange={(e) => { this.setState({ passwordRepeat: e.target.value }) }}
+                                                    size={ComponentSize.Medium}
+                                                    value={passwordRepeat}
                                                     type={InputType.Password}
                                                 />
                                             </Form.Element>
@@ -161,7 +223,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        // fetchSignup: (payload) => dispatch(fetchSignup(payload)),
+        fetchSignup: (payload) => dispatch(fetchSignup(payload)),
     };
 };
 

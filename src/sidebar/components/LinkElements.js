@@ -12,8 +12,6 @@ import { Icon, TreeNav } from '@influxdata/clockface';
 
 export default class LinkElements extends Component {
     getNavItemActivation = (keywords, location) => {
-        console.log("keywords", keywords);
-        console.log("location", location);
         const ignoreOrgAndOrgID = 1
         const parentPath = location.split('/').slice(ignoreOrgAndOrgID)
 

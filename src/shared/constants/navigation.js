@@ -3,36 +3,25 @@ import { IconFont } from '@influxdata/clockface'
 
 export const hierarchy = [
     {
-        id: 'my-projects',
-        icon: IconFont.Star,
-        label: 'Projects',
-        link: {
-            type: 'link',
-            location: `/my-projects`,
-        },
-        activeKeywords: ['my-projects', 'project'],
-        permitted: ['member', 'admin', 'editor'],
-    },
-    {
-        id: 'did',
-        icon: IconFont.Link,
-        label: 'DID',
-        link: {
-            type: 'link',
-            location: `/did`,
-        },
-        activeKeywords: ['did'],
-        permitted: ['member', 'admin', 'editor'],
-    },
-    {
-        id: 'example',
+        id: 'dt',
         icon: IconFont.Pulse,
-        label: 'Example',
+        label: 'DT',
         link: {
             type: 'link',
-            location: `/example`,
+            location: `/`,
         },
-        activeKeywords: ['', 'example'],
-        permitted: ['member', 'admin', 'editor'],
+        activeKeywords: ['', 'project'],
+        permitted: ['user', 'admin'],
+    },
+    {
+        id: 'metadt',
+        icon: IconFont.ShareSolid,
+        label: 'Meta DT',
+        link: {
+            type: 'link',
+            location: `/metadt`,
+        },
+        activeKeywords: ['metadt'],
+        permitted: ['user', 'admin'],
     },
 ]

@@ -1,14 +1,15 @@
 // Libraries
 import React, { Component } from 'react';
+import { AppWrapper } from '@influxdata/clockface';
 import { Router, Route, Switch } from "react-router-dom";
 
 // Helpers
 import { history } from "../history";
 
-// Components
-import { AppWrapper } from '@influxdata/clockface';
+// Containers
 import Sidebar from "../sidebar/containers/Sidebar";
-import DT from "../dt/containers/DT";
+import DTs from "../dt/containers/DTs";
+import Logout from "../auth/containers/Logout";
 
 class UserLayout extends Component {
     render() {
@@ -19,7 +20,8 @@ class UserLayout extends Component {
 
                     <Router history={history}>
                         <Switch>
-                            <Route exact path="/" component={DT} />
+                            <Route exact path="/" component={DTs} />
+                            <Route exact path="/logout" component={Logout} />
                         </Switch>
                     </Router>
                 </AppWrapper>

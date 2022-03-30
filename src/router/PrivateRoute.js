@@ -8,7 +8,7 @@ import jwt_decode from "jwt-decode";
 import { NotificationManager } from 'react-notifications';
 
 // Actions
-// import { logout } from "../store/"
+import { logout } from "../store/index";
 
 const PrivateRoute = ({ user, token, logout, component: Component, ...rest }) => {
     const isLoggedIn = token === "" ? false : true;
@@ -16,7 +16,7 @@ const PrivateRoute = ({ user, token, logout, component: Component, ...rest }) =>
     if (token !== "" && isLoggedIn) {
         if (new Date() > new Date(jwt_decode(token).expiry_time * 1000)) {
             NotificationManager.error("Token expired. Please login again", "Token Expired", 10000);
-            // logout();
+            logout();
         }
     }
 
@@ -44,7 +44,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        // logout: () => dispatch(logout())
+        logout: () => dispatch(logout())
     }
 };
 
