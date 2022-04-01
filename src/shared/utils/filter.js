@@ -1,6 +1,9 @@
 // Constants
 import { queryableDTsFields } from "../constants/constants";
 
+// Helpers
+import { getDTOwnerAccess } from "../auth/access";
+
 export const filterDTsBySearchTerm = (dts, term) => {
     try {
         if (term.trim() === "") {
@@ -38,5 +41,20 @@ export const filterDTsBySearchTerm = (dts, term) => {
     } catch (e) {
         console.log("error");
         return dts;
+    }
+}
+
+export const filterDTsByPrivacy = (dts, privacy, user) => {
+    switch (privacy.key) {
+        case "all":
+            return dts;
+        case "my-dts":
+            return dts.filter(dt => getDTOwnerAccess(dt.owner._id, user.id) === true);
+        case "public":
+            return dts.filter(dt => dt.privacy === "public");
+        case "private":
+            return dts.filter(dt => dt.privacy === "private");
+        default:
+            return dts;
     }
 }

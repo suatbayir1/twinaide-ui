@@ -14,6 +14,7 @@ import 'react-notifications/lib/notifications.css';
 import '@influxdata/clockface/dist/index.css';
 import './style/SignInForm.scss';
 import './style/SignUpForm.scss';
+import './style/ImportOverlay.scss';
 
 ReactDOM.render(
   <Provider store={store}>

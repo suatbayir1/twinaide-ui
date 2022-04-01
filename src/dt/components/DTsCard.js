@@ -1,128 +1,178 @@
 // Libraries
 import React, { Component } from 'react'
 import { connect } from "react-redux";
+import { NotificationManager } from 'react-notifications';
 
 // Components
 import {
-    ResourceCard, FlexBox, ComponentSize, ConfirmationButton, IconFont, ComponentColor,
-    Appearance,
+    ResourceCard, FlexBox, ComponentSize, IconFont, ComponentColor, ComponentStatus, Button,
 } from '@influxdata/clockface'
+import DangerConfirmationOverlay from '../../shared/overlays/DangerConfirmationOverlay';
 
 // Utilities
 import { relativeTimestampFormatter } from '../../shared/utils/relativeTimeFormatter';
+import { getDTOwnerAccess } from "../../shared/auth/access";
 
 // Actions
-import { fetchUpdateDT } from "../../store/dt/dtAction";
+import { fetchDeleteDT, fetchUpdateDT } from "../../store/index";
+
+// Constants
+import { dtDeleteConfirmationText } from "../../shared/constants/messages";
 
 class DTsCard extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            visibleConfirmationOverlay: false,
         }
     }
 
-    contextMenu = (project) => {
+    contextMenu = () => {
+        const { dt, user } = this.props;
+
         return (
             <>
                 <FlexBox margin={ComponentSize.ExtraSmall}>
-                    <ConfirmationButton
-                        icon={IconFont.Export}
+                    <Button
+                        icon={IconFont.EyeOpen}
                         size={ComponentSize.ExtraSmall}
-                        onConfirm={() => { }}
                         text={""}
-                        popoverColor={ComponentColor.Primary}
-                        popoverAppearance={Appearance.Outline}
-                        color={ComponentColor.Primary}
-                        confirmationLabel="Do you want to export ?"
-                        confirmationButtonColor={ComponentColor.Primary}
-                        confirmationButtonText="Yes"
-                    />
-                    <ConfirmationButton
-                        icon={IconFont.Duplicate}
-                        size={ComponentSize.ExtraSmall}
-                        onConfirm={() => { this.props.fetchCloneProject(project) }}
-                        text={""}
-                        popoverColor={ComponentColor.Secondary}
-                        popoverAppearance={Appearance.Outline}
                         color={ComponentColor.Secondary}
-                        confirmationLabel="Do you want to clone ?"
-                        confirmationButtonColor={ComponentColor.Secondary}
-                        confirmationButtonText="Yes"
+                        onClick={() => {
+                            this.setState({
+                                visibleConfirmationOverlay: true
+                            })
+                        }}
                     />
-                    <ConfirmationButton
+                    <Button
+                        icon={IconFont.CogOutline}
+                        size={ComponentSize.ExtraSmall}
+                        text={""}
+                        color={ComponentColor.Primary}
+                        status={
+                            getDTOwnerAccess(dt.owner._id, user.id) === true ?
+                                ComponentStatus.Default
+                                : ComponentStatus.Disabled
+                        }
+                        onClick={() => {
+                            this.setState({
+                                visibleConfirmationOverlay: true
+                            })
+                        }}
+                    />
+                    <Button
                         icon={IconFont.Trash}
                         size={ComponentSize.ExtraSmall}
-                        onConfirm={() => { this.props.fetchDeleteProject({ "id": project["_id"]["$oid"] }) }}
                         text={""}
-                        popoverColor={ComponentColor.Danger}
-                        popoverAppearance={Appearance.Outline}
                         color={ComponentColor.Danger}
-                        confirmationLabel="Do you want to delete ?"
-                        confirmationButtonColor={ComponentColor.Danger}
-                        confirmationButtonText="Yes"
+                        status={
+                            getDTOwnerAccess(dt.owner._id, user.id) === true ?
+                                ComponentStatus.Default
+                                : ComponentStatus.Disabled
+                        }
+                        onClick={() => {
+                            this.setState({
+                                visibleConfirmationOverlay: true
+                            })
+                        }}
                     />
                 </FlexBox>
             </>
         )
     }
 
+    deleteDT = async () => {
+        const { dt, user, fetchDeleteDT } = this.props;
+
+        if (!getDTOwnerAccess(dt.owner._id, user.id)) {
+            NotificationManager.error("Only owner can delete this DT", 'Permission Denied', 3000);
+            return;
+        }
+
+        fetchDeleteDT(dt._id);
+    }
+
     handleUpdateDTName = async (name) => {
-        const { dt, fetchUpdateDT } = this.props;
+        const { dt, user, fetchUpdateDT } = this.props;
+
+        if (!getDTOwnerAccess(dt.owner._id, user.id)) {
+            NotificationManager.error("Only owner can change this DT name", 'Permission Denied', 3000);
+            return;
+        }
 
         const payload = { "displayName": name };
         fetchUpdateDT(dt._id, payload);
     }
 
     handleUpdateDTDescription = async (description) => {
-        const { dt, fetchUpdateDT } = this.props;
+        const { dt, user, fetchUpdateDT } = this.props;
+
+        if (!getDTOwnerAccess(dt.owner._id, user.id)) {
+            NotificationManager.error("Only owner can change this DT description", 'Permission Denied', 3000);
+            return;
+        }
 
         const payload = { "description": description };
-        fetchUpdateDT(dt._id, payload);
+        await fetchUpdateDT(dt._id, payload);
+        this.setState({ visibleConfirmationOverlay: false })
     }
 
 
     render() {
         const { dt } = this.props;
+        const { visibleConfirmationOverlay } = this.state;
 
         return (
-            <ResourceCard
-                key={dt.id}
-                contextMenu={this.contextMenu()}
-            >
-                <ResourceCard.EditableName
-                    onUpdate={this.handleUpdateDTName}
-                    onClick={() => { console.log("clicked") }}
-                    name={dt.displayName}
-                    noNameString={"No name entered"}
+            <>
+                <DangerConfirmationOverlay
+                    title={"Are you sure ?"}
+                    message={dtDeleteConfirmationText}
+                    visible={visibleConfirmationOverlay}
+                    onClose={() => { this.setState({ visibleConfirmationOverlay: false }) }}
+                    onConfirm={() => { this.deleteDT() }}
                 />
-                <ResourceCard.EditableDescription
-                    onUpdate={this.handleUpdateDTDescription}
-                    description={dt.description}
-                    placeholder={"No description entered"}
-                />
-                <ResourceCard.Meta style={{ marginTop: '20px' }}>
-                    <>{`Owner: ${dt.owner.name}`}</>
-                </ResourceCard.Meta>
-                <ResourceCard.Meta style={{ marginTop: '0px' }}>
-                    <>{`Privacy: ${dt.privacy}`}</>
-                </ResourceCard.Meta>
-                <ResourceCard.Meta style={{ marginTop: '0px' }}>
-                    {relativeTimestampFormatter(dt.updatedAt, 'Last modified ')}
-                </ResourceCard.Meta>
-            </ResourceCard>
+
+                <ResourceCard
+                    key={dt.id}
+                    contextMenu={this.contextMenu()}
+                >
+                    <ResourceCard.EditableName
+                        onUpdate={this.handleUpdateDTName}
+                        onClick={() => { console.log("clicked") }}
+                        name={dt.displayName}
+                        noNameString={"No name entered"}
+                    />
+                    <ResourceCard.EditableDescription
+                        onUpdate={this.handleUpdateDTDescription}
+                        description={dt.description}
+                        placeholder={"No description entered"}
+                    />
+                    <ResourceCard.Meta style={{ marginTop: '20px' }}>
+                        <>{`Owner: ${dt.owner.name}`}</>
+                    </ResourceCard.Meta>
+                    <ResourceCard.Meta style={{ marginTop: '0px' }}>
+                        <>{`Privacy: ${dt.privacy}`}</>
+                    </ResourceCard.Meta>
+                    <ResourceCard.Meta style={{ marginTop: '0px' }}>
+                        {relativeTimestampFormatter(dt.updatedAt, 'Last modified ')}
+                    </ResourceCard.Meta>
+                </ResourceCard>
+            </>
         )
     }
 }
 
 const mapStateToProps = (state) => {
     return {
+        user: state.auth.user,
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
         fetchUpdateDT: (id, payload) => dispatch(fetchUpdateDT(id, payload)),
+        fetchDeleteDT: (id) => dispatch(fetchDeleteDT(id)),
     };
 };
 

@@ -37,7 +37,7 @@ class DTsContents extends Component {
                         :
                         <EmptyState size={ComponentSize.Large}>
                             <EmptyState.Text>
-                                No <b>Digital Twin</b> record has been created, why not create
+                                No <b>Digital Twin</b> record found, why not create
                                 one?
                             </EmptyState.Text>
                             <Button

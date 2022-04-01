@@ -6,5 +6,7 @@ export {
 
 export {
     fetchGetAllDTs,
-    fetchUpdateDT
+    fetchUpdateDT,
+    fetchDeleteDT,
+    fetchCreateDT,
 } from "./dt/dtAction";

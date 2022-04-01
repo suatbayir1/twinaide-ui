@@ -7,16 +7,17 @@ import {
     Page, Input, IconFont, Dropdown, ComponentColor, ComponentSize,
 } from '@influxdata/clockface';
 import DTsContents from '../components/DTsContents';
+import DigitalTwinImportOverlay from '../overlays/DigitalTwinImportOverlay';
 
 // Actions
 import { fetchGetAllDTs } from "../../store";
 
 // Utilities
-import { filterDTsBySearchTerm } from "../../shared/utils/filter";
+import { filterDTsBySearchTerm, filterDTsByPrivacy } from "../../shared/utils/filter";
 import { sortDTs } from "../../shared/utils/sort";
 
 // Constants
-import { sortTypes, privacyTypes } from "../../shared/constants/constants";
+import { sortTypes, privacyTypes, createOptions } from "../../shared/constants/constants";
 
 class DTs extends Component {
     constructor(props) {
@@ -26,6 +27,8 @@ class DTs extends Component {
             searchTerm: "",
             sortType: { key: "name-a-to-z", label: "Name (A → Z)" },
             privacyType: { key: "all", label: "All Digital Twins" },
+            createOption: { key: "form", label: "New Digital Twin" },
+            visibleImportOverlay: false,
         }
     }
 
@@ -36,21 +39,38 @@ class DTs extends Component {
     }
 
     filterDTs = () => {
-        const { searchTerm, sortType } = this.state;
+        const { searchTerm, sortType, privacyType } = this.state;
+        const { user } = this.props;
+
         let dts = JSON.parse(JSON.stringify(this.props.dts));
 
         dts = filterDTsBySearchTerm(dts, searchTerm);
-
         dts = sortDTs(dts, sortType);
+        dts = filterDTsByPrivacy(dts, privacyType, user);
 
         return dts;
     }
 
+    openCreateOverlay = (type) => {
+        switch (type.key) {
+            case "import":
+                this.setState({ visibleImportOverlay: true });
+                break;
+            default:
+                break;
+        }
+    }
+
     render() {
-        const { searchTerm, sortType, privacyType } = this.state;
+        const { searchTerm, sortType, privacyType, createOption, visibleImportOverlay } = this.state;
 
         return (
             <>
+                <DigitalTwinImportOverlay
+                    visible={visibleImportOverlay}
+                    onClose={() => { this.setState({ visibleImportOverlay: false }) }}
+                />
+
                 <Page>
                     <Page.Header fullWidth={false}>
                         <Page.Title title={"Digital Twin Pool"} />
@@ -110,9 +130,12 @@ class DTs extends Component {
                                     <Dropdown.Menu onCollapse={onCollapse}>
                                         {privacyTypes.map(item => (
                                             <Dropdown.Item
-                                                key={`${item.sortKey}${item.sortDirection}`}
+                                                key={item.key}
                                                 value={item}
-                                                onClick={this.sortDts}
+                                                onClick={(e) => {
+                                                    this.setState({ privacyType: e },
+                                                        () => this.filterDTs())
+                                                }}
                                                 selected={item.key === sortType.key}
                                             >
                                                 {item.label}
@@ -133,16 +156,16 @@ class DTs extends Component {
                                         size={ComponentSize.Small}
                                         icon={IconFont.Plus}
                                     >
-                                        {privacyType.label}
+                                        {createOption.label}
                                     </Dropdown.Button>
                                 )}
                                 menu={onCollapse => (
                                     <Dropdown.Menu onCollapse={onCollapse}>
-                                        {privacyTypes.map(item => (
+                                        {createOptions.map(item => (
                                             <Dropdown.Item
-                                                key={`${item.sortKey}${item.sortDirection}`}
+                                                key={item.key}
                                                 value={item}
-                                                onClick={this.sortDts}
+                                                onClick={this.openCreateOverlay}
                                                 selected={item.key === sortType.key}
                                             >
                                                 {item.label}
@@ -171,6 +194,7 @@ class DTs extends Component {
 
 const mapStateToProps = (state) => {
     return {
+        user: state.auth.user,
         dts: state.dt.dts,
     };
 };
