@@ -3,20 +3,26 @@ import React, { Component } from 'react'
 
 // Components
 import {
-    Grid, Columns, EmptyState, ComponentSize, Button, ButtonType,
-    ComponentColor, IconFont
+    Grid, Columns, EmptyState, ComponentSize,
+    ComponentColor, IconFont, Dropdown,
 } from '@influxdata/clockface';
 import DTsCard from './DTsCard';
+
+// Constants
+import { createOptions } from "../../shared/constants/constants";
 
 class DTsContents extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {}
+        this.state = {
+            createOption: { key: "form", label: "New Digital Twin" },
+        }
     }
 
     render() {
         const { dts } = this.props;
+        const { createOption } = this.state;
 
         return (
             <>
@@ -40,13 +46,33 @@ class DTsContents extends Component {
                                 No <b>Digital Twin</b> record found, why not create
                                 one?
                             </EmptyState.Text>
-                            <Button
-                                text="Create Factory"
-                                type={ButtonType.Button}
-                                icon={IconFont.Plus}
-                                color={ComponentColor.Primary}
-                                titleText={"Go to digital twin page and create factory"}
-                                onClick={() => this.props["history"].push(`/orgs/${this.props["match"].params["orgID"]}/dt`)}
+                            <Dropdown
+                                button={(active, onClick) => (
+                                    <Dropdown.Button
+                                        active={active}
+                                        onClick={onClick}
+                                        color={ComponentColor.Primary}
+                                        size={ComponentSize.Small}
+                                        icon={IconFont.Plus}
+                                    >
+                                        {createOption.label}
+                                    </Dropdown.Button>
+                                )}
+                                menu={onCollapse => (
+                                    <Dropdown.Menu onCollapse={onCollapse}>
+                                        {createOptions.map(item => (
+                                            <Dropdown.Item
+                                                key={item.key}
+                                                value={item}
+                                                onClick={this.props.openCreateOverlay}
+                                                selected={item.key === createOption.key}
+                                            >
+                                                {item.label}
+                                            </Dropdown.Item>
+                                        ))}
+                                    </Dropdown.Menu>
+                                )}
+                                style={{ flexBasis: `210px`, width: `210px` }}
                             />
                         </EmptyState>
                 }

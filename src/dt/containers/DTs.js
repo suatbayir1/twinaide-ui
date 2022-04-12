@@ -166,7 +166,7 @@ class DTs extends Component {
                                                 key={item.key}
                                                 value={item}
                                                 onClick={this.openCreateOverlay}
-                                                selected={item.key === sortType.key}
+                                                selected={item.key === createOption.key}
                                             >
                                                 {item.label}
                                             </Dropdown.Item>
@@ -184,6 +184,7 @@ class DTs extends Component {
                     >
                         <DTsContents
                             dts={this.filterDTs()}
+                            openCreateOverlay={this.openCreateOverlay}
                         />
                     </Page.Contents>
                 </Page>

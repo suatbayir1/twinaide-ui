@@ -8,13 +8,15 @@ import {
     ResourceCard, FlexBox, ComponentSize, IconFont, ComponentColor, ComponentStatus, Button,
 } from '@influxdata/clockface'
 import DangerConfirmationOverlay from '../../shared/overlays/DangerConfirmationOverlay';
+import DigitalTwinDetailAndEditOverlay from '../overlays/DigitalTwinDetailAndEditOverlay';
 
 // Utilities
 import { relativeTimestampFormatter } from '../../shared/utils/relativeTimeFormatter';
 import { getDTOwnerAccess } from "../../shared/auth/access";
+import { history } from '../../history';
 
 // Actions
-import { fetchDeleteDT, fetchUpdateDT } from "../../store/index";
+import { fetchDeleteDT, fetchUpdateDT, fetchGetSingleDT } from "../../store/index";
 
 // Constants
 import { dtDeleteConfirmationText } from "../../shared/constants/messages";
@@ -25,61 +27,9 @@ class DTsCard extends Component {
 
         this.state = {
             visibleConfirmationOverlay: false,
+            visibleDTDetailAndEditOverlay: false,
+            mode: "",
         }
-    }
-
-    contextMenu = () => {
-        const { dt, user } = this.props;
-
-        return (
-            <>
-                <FlexBox margin={ComponentSize.ExtraSmall}>
-                    <Button
-                        icon={IconFont.EyeOpen}
-                        size={ComponentSize.ExtraSmall}
-                        text={""}
-                        color={ComponentColor.Secondary}
-                        onClick={() => {
-                            this.setState({
-                                visibleConfirmationOverlay: true
-                            })
-                        }}
-                    />
-                    <Button
-                        icon={IconFont.CogOutline}
-                        size={ComponentSize.ExtraSmall}
-                        text={""}
-                        color={ComponentColor.Primary}
-                        status={
-                            getDTOwnerAccess(dt.owner._id, user.id) === true ?
-                                ComponentStatus.Default
-                                : ComponentStatus.Disabled
-                        }
-                        onClick={() => {
-                            this.setState({
-                                visibleConfirmationOverlay: true
-                            })
-                        }}
-                    />
-                    <Button
-                        icon={IconFont.Trash}
-                        size={ComponentSize.ExtraSmall}
-                        text={""}
-                        color={ComponentColor.Danger}
-                        status={
-                            getDTOwnerAccess(dt.owner._id, user.id) === true ?
-                                ComponentStatus.Default
-                                : ComponentStatus.Disabled
-                        }
-                        onClick={() => {
-                            this.setState({
-                                visibleConfirmationOverlay: true
-                            })
-                        }}
-                    />
-                </FlexBox>
-            </>
-        )
     }
 
     deleteDT = async () => {
@@ -90,7 +40,8 @@ class DTsCard extends Component {
             return;
         }
 
-        fetchDeleteDT(dt._id);
+        await fetchDeleteDT(dt._id);
+        this.setState({ visibleConfirmationOverlay: false })
     }
 
     handleUpdateDTName = async (name) => {
@@ -115,13 +66,69 @@ class DTsCard extends Component {
 
         const payload = { "description": description };
         await fetchUpdateDT(dt._id, payload);
-        this.setState({ visibleConfirmationOverlay: false })
     }
 
+    contextMenu = () => {
+        const { dt, user, fetchGetSingleDT } = this.props;
+
+        return (
+            <>
+                <FlexBox margin={ComponentSize.ExtraSmall}>
+                    <Button
+                        icon={IconFont.CogOutline}
+                        size={ComponentSize.ExtraSmall}
+                        text={""}
+                        color={ComponentColor.Primary}
+                        status={
+                            getDTOwnerAccess(dt.owner._id, user.id) === true ?
+                                ComponentStatus.Default
+                                : ComponentStatus.Disabled
+                        }
+                        onClick={() => {
+                            fetchGetSingleDT(dt._id)
+                            this.setState({
+                                visibleDTDetailAndEditOverlay: true,
+                                mode: "edit"
+                            })
+                        }}
+                    />
+                    <Button
+                        icon={IconFont.EyeOpen}
+                        size={ComponentSize.ExtraSmall}
+                        text={""}
+                        color={ComponentColor.Secondary}
+                        onClick={() => {
+                            fetchGetSingleDT(dt._id)
+                            this.setState({
+                                visibleDTDetailAndEditOverlay: true,
+                                mode: "detail"
+                            })
+                        }}
+                    />
+                    <Button
+                        icon={IconFont.Trash}
+                        size={ComponentSize.ExtraSmall}
+                        text={""}
+                        color={ComponentColor.Danger}
+                        status={
+                            getDTOwnerAccess(dt.owner._id, user.id) === true ?
+                                ComponentStatus.Default
+                                : ComponentStatus.Disabled
+                        }
+                        onClick={() => {
+                            this.setState({
+                                visibleConfirmationOverlay: true
+                            })
+                        }}
+                    />
+                </FlexBox>
+            </>
+        )
+    }
 
     render() {
-        const { dt } = this.props;
-        const { visibleConfirmationOverlay } = this.state;
+        const { dt, fetchGetSingleDT } = this.props;
+        const { visibleConfirmationOverlay, visibleDTDetailAndEditOverlay, mode } = this.state;
 
         return (
             <>
@@ -133,13 +140,23 @@ class DTsCard extends Component {
                     onConfirm={() => { this.deleteDT() }}
                 />
 
+                <DigitalTwinDetailAndEditOverlay
+                    visible={visibleDTDetailAndEditOverlay}
+                    onClose={() => { this.setState({ visibleDTDetailAndEditOverlay: false }) }}
+                    mode={mode}
+                    dt={dt}
+                />
+
                 <ResourceCard
                     key={dt.id}
                     contextMenu={this.contextMenu()}
                 >
                     <ResourceCard.EditableName
                         onUpdate={this.handleUpdateDTName}
-                        onClick={() => { console.log("clicked") }}
+                        onClick={() => {
+                            fetchGetSingleDT(dt._id)
+                            history.push(`/dt/${dt._id}`)
+                        }}
                         name={dt.displayName}
                         noNameString={"No name entered"}
                     />
@@ -173,6 +190,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         fetchUpdateDT: (id, payload) => dispatch(fetchUpdateDT(id, payload)),
         fetchDeleteDT: (id) => dispatch(fetchDeleteDT(id)),
+        fetchGetSingleDT: (id) => dispatch(fetchGetSingleDT(id)),
     };
 };
 

@@ -39,7 +39,6 @@ export const filterDTsBySearchTerm = (dts, term) => {
 
         return filteredDTs;
     } catch (e) {
-        console.log("error");
         return dts;
     }
 }

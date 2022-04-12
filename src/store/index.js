@@ -9,4 +9,5 @@ export {
     fetchUpdateDT,
     fetchDeleteDT,
     fetchCreateDT,
+    fetchGetSingleDT,
 } from "./dt/dtAction";

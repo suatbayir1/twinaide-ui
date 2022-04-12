@@ -1,9 +1,10 @@
 // TYPES
-import { GET_ALL_DTs, LOADING_DTs } from "./dtTypes";
+import { GET_ALL_DTs, LOADING_DTs, GET_DT } from "./dtTypes";
 
 const initialState = {
     isLoadingDTs: false,
     dts: [],
+    selectedDT: {},
 }
 
 const dtReducer = (state = initialState, action) => {
@@ -17,6 +18,11 @@ const dtReducer = (state = initialState, action) => {
             return {
                 ...state,
                 dts: action.payload
+            }
+        case GET_DT:
+            return {
+                ...state,
+                selectedDT: action.payload
             }
         default:
             return state;

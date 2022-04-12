@@ -14,7 +14,7 @@ const PrivateRoute = ({ user, token, logout, component: Component, ...rest }) =>
     const isLoggedIn = token === "" ? false : true;
 
     if (token !== "" && isLoggedIn) {
-        if (new Date() > new Date(jwt_decode(token).expiry_time * 1000)) {
+        if (new Date() > new Date(jwt_decode(token).exp * 1000)) {
             NotificationManager.error("Token expired. Please login again", "Token Expired", 10000);
             logout();
         }

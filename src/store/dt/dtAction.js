@@ -3,7 +3,7 @@ import axios from "axios";
 import { NotificationManager } from 'react-notifications';
 
 // Types
-import { LOADING_DTs, GET_ALL_DTs, } from "./dtTypes";
+import { LOADING_DTs, GET_ALL_DTs, GET_DT, } from "./dtTypes";
 
 // Action Methods
 export const loadingDTs = (payload) => {
@@ -17,6 +17,13 @@ export const getAllDTs = (payload) => {
     return {
         type: GET_ALL_DTs,
         payload,
+    }
+}
+
+export const getSingleDT = (payload) => {
+    return {
+        type: GET_DT,
+        payload
     }
 }
 
@@ -95,6 +102,26 @@ export const fetchCreateDT = (payload) => {
                 }
             })
             .catch(err => {
+                NotificationManager.error(err.response.data.message, 'Error', 3000);
+            })
+    }
+}
+
+export const fetchGetSingleDT = (id) => {
+    return (dispatch, getState) => {
+        let url = `${process.env.REACT_APP_API_URL}dt/${id}`;
+
+        console.log("id", id);
+
+        axios
+            .get(url, { headers: { 'Authorization': `Bearer: ${getState().auth.token}` } })
+            .then(response => {
+                if (response.status === 200) {
+                    dispatch(getSingleDT(response.data.data));
+                }
+            })
+            .catch(err => {
+                dispatch(getSingleDT({}));
                 NotificationManager.error(err.response.data.message, 'Error', 3000);
             })
     }

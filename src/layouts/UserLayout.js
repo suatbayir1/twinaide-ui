@@ -9,6 +9,7 @@ import { history } from "../history";
 // Containers
 import Sidebar from "../sidebar/containers/Sidebar";
 import DTs from "../dt/containers/DTs";
+import DT from '../dt/containers/DT';
 import Logout from "../auth/containers/Logout";
 
 class UserLayout extends Component {
@@ -21,6 +22,7 @@ class UserLayout extends Component {
                     <Router history={history}>
                         <Switch>
                             <Route exact path="/" component={DTs} />
+                            <Route exact path="/dt/:id" component={DT} />
                             <Route exact path="/logout" component={Logout} />
                         </Switch>
                     </Router>
