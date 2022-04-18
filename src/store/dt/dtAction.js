@@ -3,7 +3,7 @@ import axios from "axios";
 import { NotificationManager } from 'react-notifications';
 
 // Types
-import { LOADING_DTs, GET_ALL_DTs, GET_DT, } from "./dtTypes";
+import { LOADING_DTs, GET_ALL_DTs, GET_DT, SET_SELECTED_NODE } from "./dtTypes";
 
 // Action Methods
 export const loadingDTs = (payload) => {
@@ -23,6 +23,14 @@ export const getAllDTs = (payload) => {
 export const getSingleDT = (payload) => {
     return {
         type: GET_DT,
+        payload
+    }
+}
+
+export const setSelectedNode = (payload) => {
+    console.log("payload", payload);
+    return {
+        type: SET_SELECTED_NODE,
         payload
     }
 }
@@ -117,6 +125,7 @@ export const fetchGetSingleDT = (id) => {
             .get(url, { headers: { 'Authorization': `Bearer: ${getState().auth.token}` } })
             .then(response => {
                 if (response.status === 200) {
+                    console.log("response", response.data.data);
                     dispatch(getSingleDT(response.data.data));
                 }
             })

@@ -10,7 +10,7 @@ export const hierarchy = [
             type: 'link',
             location: `/`,
         },
-        activeKeywords: ['', 'project'],
+        activeKeywords: ['', 'dt'],
         permitted: ['user', 'admin'],
     },
     {

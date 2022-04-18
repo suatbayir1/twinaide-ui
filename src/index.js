@@ -15,6 +15,7 @@ import '@influxdata/clockface/dist/index.css';
 import './style/SignInForm.scss';
 import './style/SignUpForm.scss';
 import './style/ImportOverlay.scss';
+import './style/responsive.scss';
 
 ReactDOM.render(
   <Provider store={store}>

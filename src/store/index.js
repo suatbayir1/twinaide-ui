@@ -10,4 +10,5 @@ export {
     fetchDeleteDT,
     fetchCreateDT,
     fetchGetSingleDT,
+    setSelectedNode,
 } from "./dt/dtAction";

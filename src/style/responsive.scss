@@ -1,0 +1,28 @@
+/* DT */
+.dt-graph-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+  
+    & > * {
+      margin-right: 5px;
+  
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+
+
+@media only screen and (max-width:480px) {
+    .dt-graph-buttons  {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .dt-graph-buttons > * {
+      margin-top: 10px;
+      width: 44% !important;
+    }
+}

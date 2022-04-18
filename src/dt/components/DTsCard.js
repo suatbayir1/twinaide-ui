@@ -153,8 +153,8 @@ class DTsCard extends Component {
                 >
                     <ResourceCard.EditableName
                         onUpdate={this.handleUpdateDTName}
-                        onClick={() => {
-                            fetchGetSingleDT(dt._id)
+                        onClick={async () => {
+                            await fetchGetSingleDT(dt._id)
                             history.push(`/dt/${dt._id}`)
                         }}
                         name={dt.displayName}
