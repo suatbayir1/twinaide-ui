@@ -29,9 +29,9 @@ class DigitalTwinDetailAndEditOverlay extends Component {
 
     updateDT = async () => {
         const { dtJSON } = this.state;
-        const { dt, user, fetchUpdateDT } = this.props;
+        const { dt, user, fetchUpdateDT, selectedDT } = this.props;
 
-        if (!getDTOwnerAccess(dt.owner._id, user.id)) {
+        if (!getDTOwnerAccess(selectedDT.owner, user.id)) {
             NotificationManager.error("Only owner can change this DT description", 'Permission Denied', 3000);
             return;
         }

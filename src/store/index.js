@@ -10,5 +10,6 @@ export {
     fetchDeleteDT,
     fetchCreateDT,
     fetchGetSingleDT,
+    fetchReplaceDTWithNewDocument,
     setSelectedNode,
 } from "./dt/dtAction";

@@ -26,3 +26,5 @@ export const graphTypeList = [
     { text: 'Radial out', value: 'radialout' },
     { text: 'Radial in', value: 'radialin' },
 ]
+
+export const immutableDTKeys = ["_id", "id", "name", "createdAt", "updatedAt", "owner", "type"]

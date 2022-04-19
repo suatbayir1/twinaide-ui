@@ -28,7 +28,6 @@ export const getSingleDT = (payload) => {
 }
 
 export const setSelectedNode = (payload) => {
-    console.log("payload", payload);
     return {
         type: SET_SELECTED_NODE,
         payload
@@ -64,6 +63,27 @@ export const fetchUpdateDT = (id, payload) => {
             .then(response => {
                 if (response.status === 200) {
                     dispatch(fetchGetAllDTs());
+                    dispatch(fetchGetSingleDT(id));
+
+                    NotificationManager.success(response.data.message, 'Success', 3000);
+                }
+            })
+            .catch(err => {
+                NotificationManager.error(err.response.data.message, 'Error', 3000);
+            })
+    }
+}
+
+export const fetchReplaceDTWithNewDocument = (id, payload) => {
+    return (dispatch, getState) => {
+        let url = `${process.env.REACT_APP_API_URL}dt/${id}/replace`;
+
+        axios
+            .put(url, payload, { headers: { 'Authorization': `Bearer: ${getState().auth.token}` } })
+            .then(response => {
+                if (response.status === 200) {
+                    dispatch(fetchGetAllDTs());
+                    dispatch(fetchGetSingleDT(id));
 
                     NotificationManager.success(response.data.message, 'Success', 3000);
                 }
@@ -119,13 +139,10 @@ export const fetchGetSingleDT = (id) => {
     return (dispatch, getState) => {
         let url = `${process.env.REACT_APP_API_URL}dt/${id}`;
 
-        console.log("id", id);
-
         axios
             .get(url, { headers: { 'Authorization': `Bearer: ${getState().auth.token}` } })
             .then(response => {
                 if (response.status === 200) {
-                    console.log("response", response.data.data);
                     dispatch(getSingleDT(response.data.data));
                 }
             })

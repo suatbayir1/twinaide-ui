@@ -5,3 +5,4 @@ export const DELETE_DT = "DELETE_DT";
 export const CREATE_DT = "CREATE_DT";
 export const GET_DT = "GET_DT";
 export const SET_SELECTED_NODE = "SET_SELECTED_NODE";
+export const REPLACE_DT_WITH_NEW_DOCUMENT = "REPLACE_DT_WITH_NEW_DOCUMENT";
