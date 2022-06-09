@@ -51,3 +51,33 @@ export const isPasswordMatched = (password, passwordRepeat) => {
         return "Passwords do not match"
     }
 }
+
+export const isStringExistsSpace = (value) => {
+    if (value.indexOf(' ') >= 0) {
+        return "Filename cannot contains space character"
+    }
+}
+
+export const visualFilename = (value) => {
+    if (value.trim() === '') {
+        return 'This field cannot be empty'
+    }
+
+    if (value.length >= 51) {
+        return 'Must be 50 characters or less'
+    }
+
+    if (value.indexOf(' ') >= 0) {
+        return "This field cannot contains space character"
+    }
+
+    return null
+}
+
+export const isObjectEmpty = (value) => {
+    if (Object.keys(value).length <= 0) {
+        return 'This field cannot be empty'
+    }
+
+    return null
+}

@@ -12,6 +12,8 @@
     "jwt-decode": "^3.1.2",
     "moment": "^2.29.1",
     "react": "^16.11.0",
+    "react-apexcharts": "^1.4.0",
+    "react-beautiful-dnd": "^13.1.0",
     "react-dom": "^17.0.2",
     "react-dropzone": "^12.0.4",
     "react-force-graph-2d": "^1.23.10",
@@ -24,6 +26,11 @@
     "react-sizeme": "^3.0.2",
     "redux-thunk": "^2.3.0",
     "sass": "^1.49.9",
+    "socket.io-client": "^4.5.1",
+    "three": "^0.123.0",
+    "three-orbit-controls": "^82.1.0",
+    "three-transform-controls": "^1.0.4",
+    "threex-domevents": "^1.0.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

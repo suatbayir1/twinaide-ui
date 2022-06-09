@@ -8,6 +8,10 @@ import {
 } from '@influxdata/clockface';
 import DTMiddlePart from '../components/DTMiddlePart';
 import DTLeftPart from '../components/DTLeftPart';
+import DTRightPart from '../components/DTRightPart';
+
+// Actions
+import { setSelectedNode } from '../../store/index';
 
 class DT extends Component {
     constructor(props) {
@@ -18,8 +22,11 @@ class DT extends Component {
         }
     }
 
-    handleNodeClick = (node) => {
+    handleNodeClick = async (node) => {
+        const obj = await node;
+        const clone = await (({ childLinks, collapsed, fx, fy, vx, vy, x, y, index, color, __indexColor, __v, ...o }) => o)(obj)
         this.setState({ selectedNode: node })
+        this.props.setSelectedNode(clone);
     }
 
     render() {
@@ -62,18 +69,17 @@ class DT extends Component {
                                         handleNodeClick={this.handleNodeClick}
                                     />
                                 </Grid.Column>
-                                <div id="dt-3d-scene">
-                                    <Grid.Column
-                                        widthXS={Columns.Twelve}
-                                        widthSM={Columns.Twelve}
-                                        widthMD={Columns.Twelve}
-                                        widthLG={Columns.Four}
-                                        style={{ marginTop: '20px' }}
-                                    >
-                                        right
-                                    </Grid.Column>
-                                </div>
-
+                                <Grid.Column
+                                    widthXS={Columns.Twelve}
+                                    widthSM={Columns.Twelve}
+                                    widthMD={Columns.Twelve}
+                                    widthLG={Columns.Four}
+                                    style={{ marginTop: '20px' }}
+                                >
+                                    <DTRightPart
+                                        selectedNode={selectedNode}
+                                    />
+                                </Grid.Column>
                             </Grid.Row>
                         </Grid>
                     </Page.Contents>
@@ -91,6 +97,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
+        setSelectedNode: (payload) => dispatch(setSelectedNode(payload))
     };
 };
 

@@ -152,3 +152,21 @@ export const fetchGetSingleDT = (id) => {
             })
     }
 }
+
+export const fetchUploadDTVisualFile = (id, payload, selectedDT) => {
+    return (dispatch, getState) => {
+        let url = `${process.env.REACT_APP_API_URL}dt/${id}/uploadVisualFile`;
+
+        axios
+            .post(url, payload, { headers: { 'Authorization': `Bearer: ${getState().auth.token}` } })
+            .then(response => {
+                if (response.status === 200) {
+                    dispatch(fetchReplaceDTWithNewDocument(id, selectedDT))
+                    NotificationManager.success(response.data.message, 'Success', 2000);
+                }
+            })
+            .catch(err => {
+                NotificationManager.error(err.response.data.message, 'Error', 3000);
+            })
+    }
+}

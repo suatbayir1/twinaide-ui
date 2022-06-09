@@ -11,6 +11,7 @@ import Sidebar from "../sidebar/containers/Sidebar";
 import DTs from "../dt/containers/DTs";
 import DT from '../dt/containers/DT';
 import Logout from "../auth/containers/Logout";
+import MetaDTs from '../metadt/containers/MetaDTs';
 
 class UserLayout extends Component {
     render() {
@@ -22,6 +23,7 @@ class UserLayout extends Component {
                     <Router history={history}>
                         <Switch>
                             <Route exact path="/" component={DTs} />
+                            <Route exact path="/metadt" component={MetaDTs} />
                             <Route exact path="/dt/:id" component={DT} />
                             <Route exact path="/logout" component={Logout} />
                         </Switch>

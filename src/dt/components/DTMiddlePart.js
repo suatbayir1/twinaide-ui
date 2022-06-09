@@ -34,6 +34,7 @@ class DTMiddlePart extends Component {
                             })
                         }}
                         selectedGraphType={selectedGraphType}
+                        selectedNode={this.props.selectedNode}
                     />
                 </Panel.Header>
 

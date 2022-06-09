@@ -11,7 +11,7 @@ import AuthLayout from './layouts/AuthLayout'
 import UserLayout from './layouts/UserLayout';
 
 // Containers
-// import OverlayContainer from "./shared/containers/OverlayContainer";
+import OverlayContainer from "./shared/containers/OverlayContainer";
 
 // HOC
 import PrivateRoute from "./router/PrivateRoute";
@@ -21,7 +21,7 @@ class App extends Component {
     return (
       <>
         <NotificationContainer />
-        {/* <OverlayContainer /> */}
+        <OverlayContainer />
         <Router history={history}>
           <Switch>
             <Route exact path="/sign-in" component={AuthLayout} />

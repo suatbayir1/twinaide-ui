@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
 const baseStyle = {
@@ -29,7 +29,24 @@ const rejectStyle = {
     borderColor: '#ff1744'
 };
 
-function DragAndDrop(props) {
+function GeneralDragAndDrop(props) {
+    const [files, setFiles] = useState([]);
+
+    const onDrop = useCallback(acceptedFiles => {
+        const files = acceptedFiles.map(file => (
+            <li key={file.path}>
+                {file.path} - {file.size} bytes
+            </li>
+        ));
+
+        setFiles(files);
+
+        acceptedFiles.map(file => {
+            props.setFile(file);
+        })
+
+    }, []);
+
     const {
         getRootProps,
         getInputProps,
@@ -37,22 +54,7 @@ function DragAndDrop(props) {
         isDragAccept,
         isDragReject,
         acceptedFiles,
-    } = useDropzone({ maxFiles: 1, multiple: false, accept: "application/json" });
-
-    const files = acceptedFiles.map(file => (
-        <li key={file.path}>
-            {file.path} - {file.size} bytes
-        </li>
-    ));
-
-    acceptedFiles.map(file => {
-        var reader = new FileReader();
-        reader.onload = function (e) {
-            var contents = e.target.result;
-            props.setFileContent(contents);
-        };
-        reader.readAsText(file);
-    })
+    } = useDropzone({ maxFiles: 1, multiple: false, onDrop });
 
     const style = useMemo(() => ({
         ...baseStyle,
@@ -90,4 +92,4 @@ function DragAndDrop(props) {
     );
 }
 
-export default DragAndDrop;
+export default GeneralDragAndDrop;

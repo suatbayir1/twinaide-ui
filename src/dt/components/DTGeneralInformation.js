@@ -70,8 +70,6 @@ class DTGeneralInformation extends Component {
             return false;
         }
 
-        console.log("json", json);
-
         this.deletePropertyFromDT(json);
     }
 
@@ -108,7 +106,11 @@ class DTGeneralInformation extends Component {
 
         function iterateDT(child) {
             if (child.name === updatedJSON.existing_src.name) {
-                delete child[updatedJSON.name];
+                if (updatedJSON.namespace.length > 0) {
+                    delete child[updatedJSON.namespace[0]][updatedJSON.name];
+                } else {
+                    delete child[updatedJSON.name];
+                }
             }
 
             if (child["children"]) {
@@ -131,7 +133,7 @@ class DTGeneralInformation extends Component {
                     autoHide={false}
                     noScrollX={true}
                     autoSizeHeight={true}
-                    style={{ maxHeight: '800px' }}
+                    style={{ maxHeight: '650px' }}
                     className="data-loading--scroll-content"
                 >
                     <ReactJson
