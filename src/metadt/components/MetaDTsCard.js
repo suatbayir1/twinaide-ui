@@ -7,6 +7,7 @@ import { NotificationManager } from 'react-notifications';
 import {
     ResourceCard, FlexBox, ComponentSize, IconFont, ComponentColor, ComponentStatus, Button,
 } from '@influxdata/clockface'
+import DangerConfirmationOverlay from '../../shared/overlays/DangerConfirmationOverlay';
 
 // Utilities
 import { relativeTimestampFormatter } from '../../shared/utils/relativeTimeFormatter';
@@ -14,10 +15,10 @@ import { getDTOwnerAccess } from "../../shared/auth/access";
 import { history } from '../../history';
 
 // Actions
-import { fetchDeleteDT, fetchUpdateDT, fetchGetSingleDT } from "../../store/index";
+import { fetchDeleteMetaDT, fetchUpdateMetaDT, fetchGetSingleMetaDT, setCreateMetaDTOverlay } from "../../store/index";
 
 // Constants
-import { dtDeleteConfirmationText } from "../../shared/constants/messages";
+import { metadtDeleteConfirmationText } from "../../shared/constants/messages";
 
 class MetaDTsCard extends Component {
     constructor(props) {
@@ -30,44 +31,36 @@ class MetaDTsCard extends Component {
         }
     }
 
-    deleteDT = async () => {
-        const { dt, user, fetchDeleteDT } = this.props;
+    deleteMetaDT = async () => {
+        const { metadt, user, fetchDeleteMetaDT } = this.props;
 
-        if (!getDTOwnerAccess(dt.owner._id, user.id)) {
-            NotificationManager.error("Only owner can delete this DT", 'Permission Denied', 3000);
+        console.log(metadt);
+
+        if (!getDTOwnerAccess(metadt.owner._id, user.id)) {
+            NotificationManager.error("Only owner can delete this Meta DT", 'Permission Denied', 3000);
             return;
         }
 
-        await fetchDeleteDT(dt._id);
+        await fetchDeleteMetaDT(metadt._id);
         this.setState({ visibleConfirmationOverlay: false })
     }
 
-    handleUpdateDTName = async (name) => {
-        const { dt, user, fetchUpdateDT } = this.props;
+    handleUpdateMetaDTName = async (name) => {
+        const { metadt, user, fetchUpdateMetaDT } = this.props;
 
-        if (!getDTOwnerAccess(dt.owner._id, user.id)) {
+        console.log(metadt);
+
+        if (!getDTOwnerAccess(metadt.owner._id, user.id)) {
             NotificationManager.error("Only owner can change this DT name", 'Permission Denied', 3000);
             return;
         }
 
         const payload = { "displayName": name };
-        fetchUpdateDT(dt._id, payload);
-    }
-
-    handleUpdateDTDescription = async (description) => {
-        const { dt, user, fetchUpdateDT } = this.props;
-
-        if (!getDTOwnerAccess(dt.owner._id, user.id)) {
-            NotificationManager.error("Only owner can change this DT description", 'Permission Denied', 3000);
-            return;
-        }
-
-        const payload = { "description": description };
-        await fetchUpdateDT(dt._id, payload);
+        await fetchUpdateMetaDT(metadt._id, payload);
     }
 
     contextMenu = () => {
-        const { metadt, user, fetchGetSingleDT } = this.props;
+        const { metadt, user, fetchGetSingleMetaDT, setCreateMetaDTOverlay } = this.props;
 
         return (
             <>
@@ -83,11 +76,8 @@ class MetaDTsCard extends Component {
                                 : ComponentStatus.Disabled
                         }
                         onClick={() => {
-                            fetchGetSingleDT(metadt._id)
-                            this.setState({
-                                visibleDTDetailAndEditOverlay: true,
-                                mode: "edit"
-                            })
+                            fetchGetSingleMetaDT(metadt._id)
+                            setCreateMetaDTOverlay(true, "edit")
                         }}
                     />
                     <Button
@@ -96,11 +86,8 @@ class MetaDTsCard extends Component {
                         text={""}
                         color={ComponentColor.Secondary}
                         onClick={() => {
-                            fetchGetSingleDT(metadt._id)
-                            this.setState({
-                                visibleDTDetailAndEditOverlay: true,
-                                mode: "detail"
-                            })
+                            fetchGetSingleMetaDT(metadt._id)
+                            setCreateMetaDTOverlay(true, "detail")
                         }}
                     />
                     <Button
@@ -125,36 +112,46 @@ class MetaDTsCard extends Component {
     }
 
     render() {
-        const { metadt, fetchGetSingleDT } = this.props;
+        const { metadt, fetchGetSingleMetaDT } = this.props;
         const { visibleConfirmationOverlay, visibleDTDetailAndEditOverlay, mode } = this.state;
 
         return (
-            <ResourceCard
-                key={metadt.id}
-                contextMenu={this.contextMenu()}
-            >
-                <ResourceCard.EditableName
-                    onUpdate={this.handleUpdateDTName}
-                    onClick={async () => {
-                        await fetchGetSingleDT(metadt._id)
-                        history.push(`/dt/${metadt._id}`)
-                    }}
-                    name={metadt.displayName}
-                    noNameString={"No name entered"}
+            <>
+                <DangerConfirmationOverlay
+                    title={"Are you sure ?"}
+                    message={metadtDeleteConfirmationText}
+                    visible={visibleConfirmationOverlay}
+                    onClose={() => { this.setState({ visibleConfirmationOverlay: false }) }}
+                    onConfirm={() => { this.deleteMetaDT() }}
                 />
-                <ResourceCard.Description
-                    description={`${metadt.description.substring(0, 50)}...`}
-                />
-                <ResourceCard.Meta style={{ marginTop: '20px' }}>
-                    <>{`Owner: ${metadt.owner.name}`}</>
-                </ResourceCard.Meta>
-                <ResourceCard.Meta style={{ marginTop: '0px' }}>
-                    <>{`Privacy: ${metadt.privacy}`}</>
-                </ResourceCard.Meta>
-                <ResourceCard.Meta style={{ marginTop: '0px' }}>
-                    {relativeTimestampFormatter(metadt.updatedAt, 'Last modified ')}
-                </ResourceCard.Meta>
-            </ResourceCard>
+
+                <ResourceCard
+                    key={metadt.id}
+                    contextMenu={this.contextMenu()}
+                >
+                    <ResourceCard.EditableName
+                        onUpdate={this.handleUpdateMetaDTName}
+                        onClick={async () => {
+                            await fetchGetSingleMetaDT(metadt._id)
+                            history.push(`/dt/${metadt._id}`)
+                        }}
+                        name={metadt.displayName}
+                        noNameString={"No name entered"}
+                    />
+                    <ResourceCard.Description
+                        description={`${metadt.description.substring(0, 50)}...`}
+                    />
+                    <ResourceCard.Meta style={{ marginTop: '20px' }}>
+                        <>{`Owner: ${metadt.owner.name}`}</>
+                    </ResourceCard.Meta>
+                    <ResourceCard.Meta style={{ marginTop: '0px' }}>
+                        <>{`Privacy: ${metadt.privacy}`}</>
+                    </ResourceCard.Meta>
+                    <ResourceCard.Meta style={{ marginTop: '0px' }}>
+                        {relativeTimestampFormatter(metadt.updatedAt, 'Last modified ')}
+                    </ResourceCard.Meta>
+                </ResourceCard>
+            </>
         )
     }
 }
@@ -167,9 +164,10 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        fetchUpdateDT: (id, payload) => dispatch(fetchUpdateDT(id, payload)),
-        fetchDeleteDT: (id) => dispatch(fetchDeleteDT(id)),
-        fetchGetSingleDT: (id) => dispatch(fetchGetSingleDT(id)),
+        fetchUpdateMetaDT: (id, payload) => dispatch(fetchUpdateMetaDT(id, payload)),
+        fetchDeleteMetaDT: (id) => dispatch(fetchDeleteMetaDT(id)),
+        fetchGetSingleMetaDT: (id) => dispatch(fetchGetSingleMetaDT(id)),
+        setCreateMetaDTOverlay: (payload, mode) => dispatch(setCreateMetaDTOverlay(payload, mode)),
     };
 };
 

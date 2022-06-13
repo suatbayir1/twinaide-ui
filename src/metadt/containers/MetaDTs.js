@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 
 // Components
 import {
-    Page, Input, IconFont, Dropdown, ComponentColor, ComponentSize, Button,
+    Page, Input, IconFont, Dropdown, ComponentColor, Button,
 } from '@influxdata/clockface';
 
 // Actions
@@ -15,7 +15,7 @@ import { filterDTsBySearchTerm, filterDTsByPrivacy } from "../../shared/utils/fi
 import { sortDTs } from "../../shared/utils/sort";
 
 // Constants
-import { sortTypes, privacyTypes, createOptions } from "../../shared/constants/constants";
+import { sortTypes, privacyTypes } from "../../shared/constants/constants";
 import MetaDTsContents from '../components/MetaDTsContents';
 
 class MetaDTs extends Component {
@@ -44,9 +44,9 @@ class MetaDTs extends Component {
 
         let metadts = JSON.parse(JSON.stringify(this.props.metadts));
 
-        // dts = filterDTsBySearchTerm(dts, searchTerm);
-        // dts = sortDTs(dts, sortType);
-        // dts = filterDTsByPrivacy(dts, privacyType, user);
+        metadts = filterDTsBySearchTerm(metadts, searchTerm);
+        metadts = sortDTs(metadts, sortType);
+        metadts = filterDTsByPrivacy(metadts, privacyType, user);
 
         return metadts;
     }
@@ -68,7 +68,7 @@ class MetaDTs extends Component {
                             value={searchTerm}
                             onChange={(e) => {
                                 this.setState({ searchTerm: e.target.value },
-                                    () => this.filterDTs())
+                                    () => this.filterMetaDTs())
                             }}
                             onBlur={this.handleBlur}
                             style={{ minWidth: '210px', width: '210px' }}
@@ -90,7 +90,7 @@ class MetaDTs extends Component {
                                             value={item}
                                             onClick={(e) => {
                                                 this.setState({ sortType: e },
-                                                    () => this.filterDTs())
+                                                    () => this.filterMetaDTs())
                                             }}
                                             selected={item.key === sortType.key}
                                         >
@@ -118,7 +118,7 @@ class MetaDTs extends Component {
                                             value={item}
                                             onClick={(e) => {
                                                 this.setState({ privacyType: e },
-                                                    () => this.filterDTs())
+                                                    () => this.filterMetaDTs())
                                             }}
                                             selected={item.key === sortType.key}
                                         >
@@ -135,7 +135,7 @@ class MetaDTs extends Component {
                             text={"New Meta Digital Twin"}
                             color={ComponentColor.Primary}
                             icon={IconFont.Plus}
-                            onClick={() => { this.props.setCreateMetaDTOverlay(true) }}
+                            onClick={() => { this.props.setCreateMetaDTOverlay(true, "create") }}
                         />
                     </Page.ControlBarRight>
                 </Page.ControlBar>
@@ -162,7 +162,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        setCreateMetaDTOverlay: (payload) => dispatch(setCreateMetaDTOverlay(payload)),
+        setCreateMetaDTOverlay: (payload, mode) => dispatch(setCreateMetaDTOverlay(payload, mode)),
         fetchGetAllDTs: () => dispatch(fetchGetAllDTs()),
         fetchGetAllMetaDTs: () => dispatch(fetchGetAllMetaDTs()),
     };

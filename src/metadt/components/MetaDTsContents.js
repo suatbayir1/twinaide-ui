@@ -50,7 +50,7 @@ class MetaDTsContents extends Component {
                                 text={"New Meta Digital Twin"}
                                 color={ComponentColor.Primary}
                                 icon={IconFont.Plus}
-                                onClick={() => { this.props.setCreateMetaDTOverlay(true) }}
+                                onClick={() => { this.props.setCreateMetaDTOverlay(true, "create") }}
                             />
                         </EmptyState>
                 }
@@ -61,7 +61,7 @@ class MetaDTsContents extends Component {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        setCreateMetaDTOverlay: (payload) => dispatch(setCreateMetaDTOverlay(payload)),
+        setCreateMetaDTOverlay: (payload, mode) => dispatch(setCreateMetaDTOverlay(payload, mode)),
     };
 };
 

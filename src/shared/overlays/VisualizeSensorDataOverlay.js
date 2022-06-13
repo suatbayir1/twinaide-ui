@@ -97,15 +97,18 @@ class VisualizeSensorDataOverlay extends PureComponent {
                 return;
             }
 
+            const temp = this.state.data;
+            const xaxis = this.state.xaxis;
+            temp[field.name] = [];
+            xaxis[field.name] = [];
+
             if (visible) {
                 switch (field.dataSource?.type) {
                     case "Kafka":
-                        const temp = this.state.data;
-                        const xaxis = this.state.xaxis;
-                        temp[field.name] = [];
-                        xaxis[field.name] = [];
                         this.setState({ date: temp, xaxis }, () => this.kafkaBroker(field))
-
+                        break;
+                    case "MQTT":
+                        this.setState({ date: temp, xaxis }, () => this.mqttBroker(field))
                         break;
                     default:
                         NotificationManager.error("Data source configuration is wrong", 'Error', 3000);
@@ -118,6 +121,35 @@ class VisualizeSensorDataOverlay extends PureComponent {
     kafkaBroker = (field) => {
         socket = io('ws://localhost:5000');
         socket.emit("kafka", field.dataSource);
+
+        socket.on('event', (value) => {
+            if (this.state.pause)
+                return;
+
+            const message = JSON.parse(value);
+            let temp = { ...this.state.data };
+            let xaxis = { ...this.state.xaxis };
+
+            temp[field.name].push(message.value);
+            xaxis[field.name].push(message.timestamp);
+
+            while (temp[field.name].length > 10) {
+                temp[field.name].shift();
+                xaxis[field.name].shift();
+            }
+
+            this.setState({
+                data: temp,
+                xaxis
+            })
+        });
+
+        sockets.push(socket);
+    }
+
+    mqttBroker = (field) => {
+        socket = io('ws://localhost:5000');
+        socket.emit("mqtt", field.dataSource);
 
         socket.on('event', (value) => {
             if (this.state.pause)
@@ -292,6 +324,7 @@ class VisualizeSensorDataOverlay extends PureComponent {
                                             </Grid.Column>)
                                     }
                                     {
+                                        selectedFields.length === 0 &&
                                         <EmptyState size={ComponentSize.Large}>
                                             <EmptyState.Text>
                                                 <b>The field to display has not been selected. Please select a field from the list above</b>

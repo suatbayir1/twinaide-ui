@@ -11,7 +11,7 @@ import {
 } from '@influxdata/clockface';
 
 // Actions
-import { setCreateMetaDTOverlay, fetchGetAllDTs, fetchCreateMetaDT } from "../../store";
+import { setCreateMetaDTOverlay, fetchGetAllDTs, fetchCreateMetaDT, fetchUpdateMetaDT } from "../../store";
 
 // Utilities
 import { relativeTimestampFormatter } from '../../shared/utils/relativeTimeFormatter';
@@ -50,6 +50,37 @@ class CreateMetaDTOverlay extends Component {
         if (prevProps.dts !== this.props.dts) {
             this.setState({ items: this.props.dts });
         }
+
+        if (prevProps.metadt !== this.props.metadt && ["detail", "edit"].includes(this.props.mode)) {
+            this.setInitialForm();
+        }
+    }
+
+
+    setInitialForm = () => {
+        const { metadt, dts } = this.props;
+
+        this.setState({
+            name: metadt.name,
+            displayName: metadt.displayName,
+            version: metadt.version,
+            privacyType: metadt.privacy,
+            description: metadt.description,
+            selected: dts.filter(dt => metadt.relations.includes(dt.id)),
+            items: dts.filter(dt => !metadt.relations.includes(dt.id))
+        })
+    }
+
+    clearForm = () => {
+        this.setState({
+            items: this.props.dts,
+            selected: [],
+            name: "",
+            displayName: "",
+            privacyType: "public",
+            description: "",
+            version: "1.0",
+        })
     }
 
     move = (source, destination, droppableSource, droppableDestination) => {
@@ -130,8 +161,9 @@ class CreateMetaDTOverlay extends Component {
         }
     };
 
-    create = async () => {
+    save = async () => {
         const { name, displayName, version, privacyType, description, selected } = this.state;
+        const { mode, metadt } = this.props;
 
         if (name.trim() === "" || displayName.trim() === "" || version.trim() === "" || privacyType.trim() === "" || description.trim() === "") {
             NotificationManager.error("Please fill out the form completely", 'Error', 3000);
@@ -152,7 +184,17 @@ class CreateMetaDTOverlay extends Component {
             relations: selected.map(dt => dt.id)
         }
 
-        await this.props.fetchCreateMetaDT(payload);
+        switch (mode) {
+            case "create":
+                await this.props.fetchCreateMetaDT(payload);
+                break;
+            case "edit":
+                await this.props.fetchUpdateMetaDT(metadt._id, payload);
+                break;
+            default:
+                break;
+        }
+
     }
 
     getDTCard = (item) => {
@@ -178,16 +220,22 @@ class CreateMetaDTOverlay extends Component {
     }
 
     render() {
-        const { visible } = this.props;
+        const { visible, mode } = this.props;
         const { name, displayName, privacyTypes, privacyType, description, version } = this.state;
+
+        console.log("items", this.state.items);
+        console.log("selected", this.state.selected);
 
         return (
             <Overlay visible={visible}>
                 <Overlay.Container maxWidth={800}>
                     <Form onSubmit={this.submit}>
                         <Overlay.Header
-                            title={"Create Meta Digital Twin"}
-                            onDismiss={() => { this.props.setCreateMetaDTOverlay(false) }}
+                            title={`${mode.charAt(0).toUpperCase() + mode.slice(1)} Meta Digital Twin`}
+                            onDismiss={() => {
+                                this.clearForm();
+                                this.props.setCreateMetaDTOverlay(false, "create")
+                            }}
                         />
                         <Overlay.Body>
                             <Grid.Row>
@@ -197,6 +245,7 @@ class CreateMetaDTOverlay extends Component {
                                         label={"Name"}
                                     >
                                         <Input
+                                            status={mode === "detail" ? ComponentStatus.Disabled : ComponentStatus.Default}
                                             onChange={(e) => { this.setState({ name: e.target.value }) }}
                                             value={name}
                                         />
@@ -209,6 +258,7 @@ class CreateMetaDTOverlay extends Component {
                                         required={true}
                                     >
                                         <Input
+                                            status={mode === "detail" ? ComponentStatus.Disabled : ComponentStatus.Default}
                                             onChange={(e) => { this.setState({ displayName: e.target.value }) }}
                                             value={displayName}
                                         />
@@ -221,6 +271,7 @@ class CreateMetaDTOverlay extends Component {
                                         required={true}
                                     >
                                         <Input
+                                            status={mode === "detail" ? ComponentStatus.Disabled : ComponentStatus.Default}
                                             onChange={(e) => { this.setState({ version: e.target.value }) }}
                                             value={version}
                                         />
@@ -233,6 +284,7 @@ class CreateMetaDTOverlay extends Component {
                                         required={true}
                                     >
                                         <SelectDropdown
+                                            buttonStatus={mode === "detail" ? ComponentStatus.Disabled : ComponentStatus.Default}
                                             options={privacyTypes}
                                             selectedOption={privacyType}
                                             onSelect={(e) => { this.setState({ privacyType: e }) }}
@@ -246,6 +298,7 @@ class CreateMetaDTOverlay extends Component {
                                         required={true}
                                     >
                                         <TextArea
+                                            status={mode === "detail" ? ComponentStatus.Disabled : ComponentStatus.Default}
                                             value={description}
                                             onChange={(e) => { this.setState({ description: e.target.value }) }}
                                             rows={3}
@@ -268,6 +321,7 @@ class CreateMetaDTOverlay extends Component {
                                                 style={this.getListStyle(snapshot.isDraggingOver)}>
                                                 {this.state.items.map((item, index) => (
                                                     <Draggable
+                                                        isDragDisabled={mode === "detail" ? true : false}
                                                         key={item.id}
                                                         draggableId={item.id}
                                                         index={index}
@@ -298,6 +352,7 @@ class CreateMetaDTOverlay extends Component {
                                                 style={this.getListStyle(snapshot.isDraggingOver)}>
                                                 {this.state.selected.map((item, index) => (
                                                     <Draggable
+                                                        isDragDisabled={mode === "detail" ? true : false}
                                                         key={item.id}
                                                         draggableId={item.id}
                                                         index={index}>
@@ -327,10 +382,10 @@ class CreateMetaDTOverlay extends Component {
                             <Button
                                 text={`Save Meta Digital Twin`}
                                 color={ComponentColor.Primary}
-                                status={ComponentStatus.Default}
+                                status={mode === "detail" ? ComponentStatus.Disabled : ComponentStatus.Default}
                                 type={ButtonType.Submit}
                                 icon={IconFont.Checkmark}
-                                onClick={this.create}
+                                onClick={this.save}
                             />
                         </Overlay.Footer>
                     </Form>
@@ -343,15 +398,18 @@ class CreateMetaDTOverlay extends Component {
 const mapStateToProps = (state) => {
     return {
         visible: state.metadt.visibleCreateMetaDTOverlay,
+        mode: state.metadt.metadtOverlayMode,
         dts: state.dt.dts,
+        metadt: state.metadt.metadt,
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        setCreateMetaDTOverlay: (payload) => dispatch(setCreateMetaDTOverlay(payload)),
+        setCreateMetaDTOverlay: (payload, mode) => dispatch(setCreateMetaDTOverlay(payload, mode)),
         fetchGetAllDTs: () => dispatch(fetchGetAllDTs()),
         fetchCreateMetaDT: (payload) => dispatch(fetchCreateMetaDT(payload)),
+        fetchUpdateMetaDT: (id, payload) => dispatch(fetchUpdateMetaDT(id, payload)),
     };
 };
 

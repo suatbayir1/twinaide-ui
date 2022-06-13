@@ -19,6 +19,9 @@ export {
     setCreateMetaDTOverlay,
     fetchCreateMetaDT,
     fetchGetAllMetaDTs,
+    fetchDeleteMetaDT,
+    fetchUpdateMetaDT,
+    fetchGetSingleMetaDT,
 } from "./metadt/metadtAction";
 
 export {
