@@ -15,7 +15,10 @@ import { getDTOwnerAccess } from "../../shared/auth/access";
 import { history } from '../../history';
 
 // Actions
-import { fetchDeleteMetaDT, fetchUpdateMetaDT, fetchGetSingleMetaDT, setCreateMetaDTOverlay } from "../../store/index";
+import {
+    fetchDeleteMetaDT, fetchUpdateMetaDT, fetchGetSingleMetaDT,
+    fetchGetSingleMetaDTDetail, setCreateMetaDTOverlay
+} from "../../store/index";
 
 // Constants
 import { metadtDeleteConfirmationText } from "../../shared/constants/messages";
@@ -112,8 +115,8 @@ class MetaDTsCard extends Component {
     }
 
     render() {
-        const { metadt, fetchGetSingleMetaDT } = this.props;
-        const { visibleConfirmationOverlay, visibleDTDetailAndEditOverlay, mode } = this.state;
+        const { metadt, fetchGetSingleMetaDTDetail } = this.props;
+        const { visibleConfirmationOverlay, } = this.state;
 
         return (
             <>
@@ -132,8 +135,8 @@ class MetaDTsCard extends Component {
                     <ResourceCard.EditableName
                         onUpdate={this.handleUpdateMetaDTName}
                         onClick={async () => {
-                            await fetchGetSingleMetaDT(metadt._id)
-                            history.push(`/dt/${metadt._id}`)
+                            await fetchGetSingleMetaDTDetail(metadt._id)
+                            history.push(`/metadt/${metadt._id}`)
                         }}
                         name={metadt.displayName}
                         noNameString={"No name entered"}
@@ -167,6 +170,7 @@ const mapDispatchToProps = (dispatch) => {
         fetchUpdateMetaDT: (id, payload) => dispatch(fetchUpdateMetaDT(id, payload)),
         fetchDeleteMetaDT: (id) => dispatch(fetchDeleteMetaDT(id)),
         fetchGetSingleMetaDT: (id) => dispatch(fetchGetSingleMetaDT(id)),
+        fetchGetSingleMetaDTDetail: (id) => dispatch(fetchGetSingleMetaDTDetail(id)),
         setCreateMetaDTOverlay: (payload, mode) => dispatch(setCreateMetaDTOverlay(payload, mode)),
     };
 };

@@ -223,9 +223,6 @@ class CreateMetaDTOverlay extends Component {
         const { visible, mode } = this.props;
         const { name, displayName, privacyTypes, privacyType, description, version } = this.state;
 
-        console.log("items", this.state.items);
-        console.log("selected", this.state.selected);
-
         return (
             <Overlay visible={visible}>
                 <Overlay.Container maxWidth={800}>

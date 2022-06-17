@@ -41,7 +41,7 @@ class SceneManager {
                 obj.geometry = undefined;
                 await scene.remove(obj);
             }
-            renderer.render(scene, camera);
+            await renderer.render(scene, camera);
             return true;
         }
         return false;
@@ -102,12 +102,12 @@ class SceneManager {
         let vm = this;
         await loader.load(filepath, async function (collada) {
             dae = collada.scene;
-            dae.traverse(function (child) {
+            await dae.traverse(async function (child) {
                 if (child.isMesh) {
                     child.material.flatShading = true;
 
                     if (object["color"] !== undefined) {
-                        child.material.color.set(object.color || "#ffffff");
+                        await child.material.color.set(object.color || "#ffffff");
                     }
                 }
             });
@@ -120,14 +120,14 @@ class SceneManager {
             dae.scale.z = object.scaleZ || 1;
             dae.name = object.fileNameWithExtension;
 
-            dae.updateMatrix();
+            await dae.updateMatrix();
 
-            Object.keys(collada.library.materials).forEach(material => {
+            await Object.keys(collada.library.materials).forEach(material => {
                 collada.library.materials[material].build.wireframe = wireframe;
             })
 
-            vm.scene.add(dae);
-            vm.renderer.render(vm.scene, vm.camera);
+            await vm.scene.add(dae);
+            await vm.renderer.render(vm.scene, vm.camera);
         });
         await this.renderer.render(this.scene, this.camera);
     }

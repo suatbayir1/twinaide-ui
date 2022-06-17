@@ -127,6 +127,13 @@ class VisualizeSensorDataOverlay extends PureComponent {
                 return;
 
             const message = JSON.parse(value);
+            console.log(message);
+
+            if (message.error) {
+                NotificationManager.error(`${field.displayName}: ${message.error}`, 'Error', 3000);
+                return;
+            }
+
             let temp = { ...this.state.data };
             let xaxis = { ...this.state.xaxis };
 
@@ -152,10 +159,17 @@ class VisualizeSensorDataOverlay extends PureComponent {
         socket.emit("mqtt", field.dataSource);
 
         socket.on('event', (value) => {
+            console.log("value", value);
             if (this.state.pause)
                 return;
 
             const message = JSON.parse(value);
+
+            if (message.error) {
+                NotificationManager.error(`${field.displayName}: ${message.error}`, 'Error', 3000);
+                return;
+            }
+
             let temp = { ...this.state.data };
             let xaxis = { ...this.state.xaxis };
 

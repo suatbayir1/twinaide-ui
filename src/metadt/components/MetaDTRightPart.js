@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 
 // Components
 import {
-    Panel, ComponentSize,
+    Panel, ComponentSize, RemoteDataState
 } from '@influxdata/clockface'
 
 // Managers
@@ -13,26 +13,32 @@ import SceneManager from '../../shared/managers/SceneManager';
 // Scene Helpers
 var camera, controls, scene, renderer;
 
-class DTRightPart extends Component {
+class MetaDTRightPart extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            spinnerLoading: RemoteDataState.Loading
         }
     }
 
     async componentDidMount() {
+        console.log("mount")
         await this.createScene();
         await this.responsiveConfiguration();
         await this.addVisualFilesToScene();
     }
 
     async componentDidUpdate(prevProps, prevState, snapshot) {
-        if (prevProps.selectedDT !== this.props.selectedDT) {
+        console.log("update");
+        if (prevProps.selectedMetaDT !== this.props.selectedMetaDT) {
+            console.log("update")
+            console.log(scene);
             setTimeout(async () => {
                 await SceneManager.removeAllObjectFromScene(scene, camera, renderer);
                 await this.addVisualFilesToScene();
             }, 1000)
+
         }
 
         if (prevProps.selectedNode !== this.props.selectedNode) {
@@ -44,6 +50,9 @@ class DTRightPart extends Component {
         window.removeEventListener('resize', () => {
             renderer.setSize(document.querySelector("#visualizeGraph").clientWidth - 30, document.querySelector("#visualizeGraph").clientHeight - 30);
         });
+
+        console.log("unmount");
+        await SceneManager.removeAllObjectFromScene(scene, camera, renderer);
     }
 
     responsiveConfiguration = () => {
@@ -81,34 +90,36 @@ class DTRightPart extends Component {
 
     addVisualFilesToScene = async () => {
         const sceneManager = new SceneManager(scene, camera, renderer);
-        let currentItem = JSON.parse(JSON.stringify(this.props.selectedDT));
+        let currentItem = JSON.parse(JSON.stringify(this.props.selectedMetaDT));
+        console.log("currentItem", currentItem);
 
         if (currentItem.visual) {
-            sceneManager.addColladaFile(currentItem.visual);
+            await sceneManager.addColladaFile(currentItem.visual);
         }
 
         if (currentItem["children"] === undefined) {
             return;
         }
 
-        currentItem["children"].forEach(child => {
-            createNodesAndLinks(child);
+        currentItem["children"].forEach(async child => {
+            await createNodesAndLinks(child);
         })
 
-        function createNodesAndLinks(child) {
+        async function createNodesAndLinks(child) {
             if (child.visual) {
-                sceneManager.addColladaFile(child.visual);
+                await sceneManager.addColladaFile(child.visual);
             }
 
             if (child["children"]) {
-                child["children"].forEach(subChild => {
-                    createNodesAndLinks(subChild);
+                child["children"].forEach(async subChild => {
+                    await createNodesAndLinks(subChild);
                 })
             }
         }
     }
 
     filterSceneBySelectedNode = () => {
+        console.log("filter")
         const { selectedNode } = this.props;
         const names = [];
 
@@ -151,7 +162,7 @@ class DTRightPart extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        selectedDT: state.dt.selectedDT,
+        selectedMetaDT: state.metadt.selectedMetaDT,
     };
 };
 
@@ -160,4 +171,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(DTRightPart);
+export default connect(mapStateToProps, mapDispatchToProps)(MetaDTRightPart);

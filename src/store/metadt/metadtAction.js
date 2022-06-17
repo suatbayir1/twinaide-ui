@@ -3,7 +3,7 @@ import axios from "axios";
 import { NotificationManager } from 'react-notifications';
 
 // Types
-import { SET_CREATE_METADT_OVERLAY, GET_ALL_META_DTs, GET_META_DT } from "./metadtTypes";
+import { SET_CREATE_METADT_OVERLAY, GET_ALL_META_DTs, GET_META_DT, GET_META_DT_DETAIL } from "./metadtTypes";
 
 // Action Methods
 export const setCreateMetaDTOverlay = (visible, mode) => {
@@ -24,6 +24,13 @@ export const getAllMetaDTs = (payload) => {
 export const getSingleMetaDT = (payload) => {
     return {
         type: GET_META_DT,
+        payload
+    }
+}
+
+export const getSingleMetaDTDetail = (payload) => {
+    return {
+        type: GET_META_DT_DETAIL,
         payload
     }
 }
@@ -118,6 +125,24 @@ export const fetchGetSingleMetaDT = (id) => {
             .then(response => {
                 if (response.status === 200) {
                     dispatch(getSingleMetaDT(response.data.data));
+                }
+            })
+            .catch(err => {
+                dispatch(getSingleMetaDT({}));
+                NotificationManager.error(err.response.data.message, 'Error', 3000);
+            })
+    }
+}
+
+export const fetchGetSingleMetaDTDetail = (id) => {
+    return (dispatch, getState) => {
+        let url = `${process.env.REACT_APP_API_URL}metadt/${id}/detail`;
+
+        axios
+            .get(url, { headers: { 'Authorization': `Bearer: ${getState().auth.token}` } })
+            .then(response => {
+                if (response.status === 200) {
+                    dispatch(getSingleMetaDTDetail(response.data.data));
                 }
             })
             .catch(err => {

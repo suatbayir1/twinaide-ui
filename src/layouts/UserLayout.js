@@ -12,6 +12,7 @@ import DTs from "../dt/containers/DTs";
 import DT from '../dt/containers/DT';
 import Logout from "../auth/containers/Logout";
 import MetaDTs from '../metadt/containers/MetaDTs';
+import MetaDT from '../metadt/containers/MetaDT';
 
 class UserLayout extends Component {
     render() {
@@ -25,6 +26,7 @@ class UserLayout extends Component {
                             <Route exact path="/" component={DTs} />
                             <Route exact path="/metadt" component={MetaDTs} />
                             <Route exact path="/dt/:id" component={DT} />
+                            <Route exact path="/metadt/:id" component={MetaDT} />
                             <Route exact path="/logout" component={Logout} />
                         </Switch>
                     </Router>

@@ -22,6 +22,7 @@ export {
     fetchDeleteMetaDT,
     fetchUpdateMetaDT,
     fetchGetSingleMetaDT,
+    fetchGetSingleMetaDTDetail,
 } from "./metadt/metadtAction";
 
 export {
