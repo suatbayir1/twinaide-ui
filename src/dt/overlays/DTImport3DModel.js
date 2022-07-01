@@ -12,9 +12,6 @@ import {
     ButtonType, ComponentStatus, IconFont, Columns, Input, InputType
 } from '@influxdata/clockface';
 
-// Helpers
-import { visualFilename, isObjectEmpty } from "../../shared/helpers/FormValidator";
-
 // Actions
 import { fetchReplaceDTWithNewDocument, fetchUploadDTVisualFile } from "../../store/index";
 

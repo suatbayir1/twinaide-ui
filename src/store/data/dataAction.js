@@ -1,7 +1,3 @@
-// Libraries
-import axios from "axios";
-import { NotificationManager } from 'react-notifications';
-
 // Types
 import { SET_VISUALIZE_SENSOR_DATA_OVERLAY } from "./dataTypes";
 

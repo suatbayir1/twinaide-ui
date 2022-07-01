@@ -3,7 +3,7 @@ import axios from "axios";
 import { NotificationManager } from 'react-notifications';
 
 // Types
-import { LOADING_DTs, GET_ALL_DTs, GET_DT, SET_SELECTED_NODE } from "./dtTypes";
+import { LOADING_DTs, GET_ALL_DTs, GET_DT, SET_SELECTED_NODE, SET_IMPORT_DT_FROM_TWINBASE_OVERLAY, GET_DTS_FROM_TWINBASE } from "./dtTypes";
 
 // Action Methods
 export const loadingDTs = (payload) => {
@@ -30,6 +30,20 @@ export const getSingleDT = (payload) => {
 export const setSelectedNode = (payload) => {
     return {
         type: SET_SELECTED_NODE,
+        payload
+    }
+}
+
+export const setImportDTFromTwinbaseOverlay = (payload) => {
+    return {
+        type: SET_IMPORT_DT_FROM_TWINBASE_OVERLAY,
+        payload
+    }
+}
+
+export const getDTsFromTwinbase = (payload) => {
+    return {
+        type: GET_DTS_FROM_TWINBASE,
         payload
     }
 }
@@ -166,6 +180,24 @@ export const fetchUploadDTVisualFile = (id, payload, selectedDT) => {
                 }
             })
             .catch(err => {
+                NotificationManager.error(err.response.data.message, 'Error', 3000);
+            })
+    }
+}
+
+export const fetchGetDTsFromTwinbase = () => {
+    return (dispatch, getState) => {
+        let url = process.env.REACT_APP_TWINBASE_URL;
+
+        axios
+            .get(url)
+            .then(response => {
+                if (response.status === 200) {
+                    dispatch(getDTsFromTwinbase(response.data.twins));
+                }
+            })
+            .catch(err => {
+                dispatch(getDTsFromTwinbase([]));
                 NotificationManager.error(err.response.data.message, 'Error', 3000);
             })
     }

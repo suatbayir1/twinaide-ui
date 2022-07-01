@@ -1,11 +1,13 @@
 // TYPES
-import { GET_ALL_DTs, LOADING_DTs, GET_DT, SET_SELECTED_NODE } from "./dtTypes";
+import { GET_ALL_DTs, LOADING_DTs, GET_DT, SET_SELECTED_NODE, SET_IMPORT_DT_FROM_TWINBASE_OVERLAY, GET_DTS_FROM_TWINBASE } from "./dtTypes";
 
 const initialState = {
     isLoadingDTs: false,
     dts: [],
     selectedDT: {},
     selectedNode: {},
+    visibleImportDTFromTwinbaseOverlay: false,
+    twinbaseDTs: [],
 }
 
 const dtReducer = (state = initialState, action) => {
@@ -29,6 +31,17 @@ const dtReducer = (state = initialState, action) => {
             return {
                 ...state,
                 selectedNode: action.payload
+            }
+        case SET_IMPORT_DT_FROM_TWINBASE_OVERLAY:
+            console.log("action", action.payload);
+            return {
+                ...state,
+                visibleImportDTFromTwinbaseOverlay: action.payload,
+            }
+        case GET_DTS_FROM_TWINBASE:
+            return {
+                ...state,
+                twinbaseDTs: action.payload
             }
         default:
             return state;

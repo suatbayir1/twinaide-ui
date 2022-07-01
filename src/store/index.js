@@ -13,6 +13,8 @@ export {
     fetchReplaceDTWithNewDocument,
     setSelectedNode,
     fetchUploadDTVisualFile,
+    setImportDTFromTwinbaseOverlay,
+    fetchGetDTsFromTwinbase,
 } from "./dt/dtAction";
 
 export {

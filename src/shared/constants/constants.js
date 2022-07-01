@@ -14,8 +14,8 @@ export const privacyTypes = [
     { key: "private", label: "Private Digital Twins" },
 ];
 export const createOptions = [
-    { key: "form", label: "New Digital Twin" },
-    { key: "import", label: "Import Digital Twin" }
+    { key: "import", label: "Import Digital Twin" },
+    { key: "import-twinbase", label: "Import DT From Twinbase" },
 ]
 
 export const graphTypeList = [
@@ -27,4 +27,4 @@ export const graphTypeList = [
     { text: 'Radial in', value: 'radialin' },
 ]
 
-export const immutableDTKeys = ["_id", "id", "name", "createdAt", "updatedAt", "owner", "type"]
+export const immutableDTKeys = ["_id", "id", "name", "createdAt", "updatedAt", "owner"]

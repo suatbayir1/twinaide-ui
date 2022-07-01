@@ -10,7 +10,7 @@ import DTsContents from '../components/DTsContents';
 import DigitalTwinImportOverlay from '../overlays/DigitalTwinImportOverlay';
 
 // Actions
-import { fetchGetAllDTs } from "../../store";
+import { fetchGetAllDTs, setImportDTFromTwinbaseOverlay } from "../../store";
 
 // Utilities
 import { filterDTsBySearchTerm, filterDTsByPrivacy } from "../../shared/utils/filter";
@@ -27,7 +27,7 @@ class DTs extends Component {
             searchTerm: "",
             sortType: { key: "name-a-to-z", label: "Name (A → Z)" },
             privacyType: { key: "all", label: "All Digital Twins" },
-            createOption: { key: "form", label: "New Digital Twin" },
+            createOption: { key: "import", label: "Import Digital Twin" },
             visibleImportOverlay: false,
         }
     }
@@ -52,9 +52,14 @@ class DTs extends Component {
     }
 
     openCreateOverlay = (type) => {
+        console.log("type", type);
         switch (type.key) {
             case "import":
                 this.setState({ visibleImportOverlay: true });
+                break;
+            case "import-twinbase":
+                console.log("clicked");
+                this.props.setImportDTFromTwinbaseOverlay(true);
                 break;
             default:
                 break;
@@ -203,6 +208,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         fetchGetAllDTs: () => dispatch(fetchGetAllDTs()),
+        setImportDTFromTwinbaseOverlay: (payload) => dispatch(setImportDTFromTwinbaseOverlay(payload)),
     };
 };
 
