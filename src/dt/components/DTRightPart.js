@@ -80,11 +80,11 @@ class DTRightPart extends Component {
     }
 
     addVisualFilesToScene = async () => {
-        const sceneManager = new SceneManager(scene, camera, renderer);
         let currentItem = JSON.parse(JSON.stringify(this.props.selectedDT));
+        let vm = this;
 
         if (currentItem.visual) {
-            sceneManager.addColladaFile(currentItem.visual);
+            this.handleAddVisualFile(currentItem.visual);
         }
 
         if (currentItem["children"] === undefined) {
@@ -97,7 +97,7 @@ class DTRightPart extends Component {
 
         function createNodesAndLinks(child) {
             if (child.visual) {
-                sceneManager.addColladaFile(child.visual);
+                vm.handleAddVisualFile(child.visual);
             }
 
             if (child["children"]) {
@@ -106,6 +106,28 @@ class DTRightPart extends Component {
                 })
             }
         }
+    }
+
+    handleAddVisualFile = (visual) => {
+        const sceneManager = new SceneManager(scene, camera, renderer);
+
+        const fileType = visual.fileNameWithExtension.split('.').pop();
+
+        console.log({ fileType })
+
+        switch (fileType) {
+            case "dae":
+                console.log("dae");
+                sceneManager.addColladaFile(visual, false);
+                break;
+            case "glb":
+                console.log("glb", visual);
+                sceneManager.addGlbFile(visual, false);
+                break;
+            default:
+                break;
+        }
+
     }
 
     filterSceneBySelectedNode = () => {

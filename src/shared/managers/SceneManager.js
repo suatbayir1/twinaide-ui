@@ -1,5 +1,7 @@
 // Libraries
 import { ColladaLoader } from "three/examples/jsm/loaders/ColladaLoader";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader"
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader"
 
 // Constants
 var THREE = require("three");
@@ -129,6 +131,50 @@ class SceneManager {
             await vm.scene.add(dae);
             await vm.renderer.render(vm.scene, vm.camera);
         });
+        await this.renderer.render(this.scene, this.camera);
+    }
+
+    addGlbFile = async (object, wireframe) => {
+        const loader = new GLTFLoader();
+        const dracoLoader = new DRACOLoader();
+
+        dracoLoader.setDecoderPath("../../node_modules/three/examples/js/libs/draco/");
+        loader.setDRACOLoader(dracoLoader);
+
+        const filepath = `${process.env.REACT_APP_DT_VISUAL_FILES_URL}/${object.fileNameWithExtension}`;
+
+        let vm = this;
+        await loader.load(filepath,
+            async function (gltf) {
+                gltf.scene.traverse((o) => {
+                    if (o.isMesh) {
+                        o.material.emissive = new THREE.Color(object.color);
+                    }
+                });
+
+                gltf.scene.scale.set(
+                    object.scaleX || 0,
+                    object.scaleY || 0,
+                    object.scaleZ || 0
+                );
+
+                gltf.scene.position.set(
+                    object.positionX || 0,
+                    object.positionY || 0,
+                    object.positionZ || 0
+                )
+
+                gltf.scene.name = object.fileNameWithExtension;
+
+                await vm.scene.add(gltf.scene);
+                await vm.renderer.render(vm.scene, vm.camera);
+            },
+            function (_) {
+            },
+
+            function (_) {
+            }
+        );
         await this.renderer.render(this.scene, this.camera);
     }
 }
