@@ -27,25 +27,11 @@ class ImportDTFromTwinbase extends Component {
     }
 
     async componentDidMount() {
-        // const result = await fetch("https://dtid.org/f92f8728-13ff-42c8-8a3e-94c6d1b62fa6", {
-        //     method: 'GET',
-        //     mode: 'cors',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //         'Access-Control-Allow-Origin': '*',
-        //         'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
-        //         'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, PUT, PATCH, DELETE',
-        //     },
-        //     credentials: 'include'
-        // });
-        // console.log(result.url)
-
         this.props.fetchGetDTsFromTwinbase();
     }
 
     fetchMetaDataOfSelectedDT = async () => {
         const { selectedDT } = this.state;
-        console.log("selectedDT", selectedDT)
 
         let metadata = await TwinbaseManager.fetchMetadataOfDT(selectedDT.url);
         var createdDT = await (({ relations, ...o }) => o)(metadata)
@@ -102,8 +88,6 @@ class ImportDTFromTwinbase extends Component {
     }
 
     save = async () => {
-        console.log(this.state.createdDT);
-
         await this.props.fetchCreateDT(this.state.createdDT);
     }
 

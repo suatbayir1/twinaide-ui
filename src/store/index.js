@@ -15,6 +15,7 @@ export {
     fetchUploadDTVisualFile,
     setImportDTFromTwinbaseOverlay,
     fetchGetDTsFromTwinbase,
+    setImportDTFromKmackOverlay
 } from "./dt/dtAction";
 
 export {

@@ -5,6 +5,7 @@ import React, { Component } from 'react'
 import CreateMetaDTOverlay from '../../metadt/overlays/CreateMetaDTOverlay';
 import VisualizeSensorDataOverlay from '../../shared/overlays/VisualizeSensorDataOverlay';
 import ImportDTFromTwinbase from '../../dt/overlays/ImportDTFromTwinbase';
+import ImportDTFromKmack from '../../dt/overlays/ImportDTFromKmack';
 
 class OverlayContainer extends Component {
     render() {
@@ -13,6 +14,7 @@ class OverlayContainer extends Component {
                 <CreateMetaDTOverlay />
                 <VisualizeSensorDataOverlay />
                 <ImportDTFromTwinbase />
+                <ImportDTFromKmack />
             </>
         )
     }

@@ -35,7 +35,8 @@ class SceneManager {
         if (scene !== undefined) {
             let obj;
             for (var i = scene.children.length - 1; i >= 0; i--) {
-                if (["GridHelper", "HemisphereLight"].includes(scene.children[i]?.type)) {
+                console.log(scene.children[i]?.type)
+                if (["GridHelper", "HemisphereLight", "DirectionalLight"].includes(scene.children[i]?.type)) {
                     continue;
                 }
                 obj = scene.children[i];
@@ -52,7 +53,7 @@ class SceneManager {
     setVisibleNodes = async (names) => {
         if (this.scene !== undefined) {
             for (var i = this.scene.children.length - 1; i >= 0; i--) {
-                if (["GridHelper", "HemisphereLight"].includes(this.scene.children[i]?.type)) {
+                if (["GridHelper", "HemisphereLight", "DirectionalLight"].includes(this.scene.children[i]?.type)) {
                     continue;
                 }
 
@@ -90,11 +91,26 @@ class SceneManager {
     addGridToScene = (size, divisions, color1, color2) => {
         const grid = new THREE.GridHelper(size, divisions, color1, color2);
         this.scene.add(grid);
+        // this.scene.background = new THREE.Color(0xc8c8c8);
     }
 
     addLightToScene = (skyColor, groundColor) => {
         const light = new THREE.HemisphereLight(skyColor, groundColor);
         this.scene.add(light);
+
+        // const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444);
+        // hemiLight.position.set(20, 20, 10);
+        // this.scene.add(hemiLight);
+        const dirLight = new THREE.DirectionalLight(0xffffff);
+        dirLight.position.set(-10, 20, 6);
+        dirLight.castShadow = true;
+        dirLight.shadow.camera.top = 2;
+        dirLight.shadow.camera.bottom = -2;
+        dirLight.shadow.camera.left = -2;
+        dirLight.shadow.camera.right = 2;
+        dirLight.shadow.camera.near = 0.1;
+        dirLight.shadow.camera.far = 500;
+        this.scene.add(dirLight);
     }
 
     addColladaFile = async (object, wireframe) => {
@@ -149,6 +165,10 @@ class SceneManager {
                 gltf.scene.traverse((o) => {
                     if (o.isMesh) {
                         o.material.emissive = new THREE.Color(object.color);
+                        // o.material.emissive = new THREE.Color(0xc8c8c8);
+                        o.castShadow = true;
+                        o.receiveShadow = true;
+                        o.geometry.computeVertexNormals(); // FI
                     }
                 });
 

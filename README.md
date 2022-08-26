@@ -1,70 +1,47 @@
-# Getting Started with Create React App
+# Twinaide
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Twinaide is an open source platform for managing and creating interoperable digital twins. The twinaide project consists of 3 separate projects: a single page application developed with React, a rest api developed with nodejs and expressjs, and a flask api developed to interact with third party services.
 
-## Available Scripts
+Source codes of api developed using nodejs, expressjs and mongodb can be accessed at [twinaide](https://github.com/suatbayir1/twinaide)
 
-In the project directory, you can run:
+The source code of the interface developed using reactjs and various javascript libraries can be accessed at [twinaide-ui](https://github.com/suatbayir1/twinaide-ui)
 
-### `npm start`
+API developed using python and flask technologies and communicating with third party services can be accessed at [twinaide-python](https://github.com/suatbayir1/twinaide-python)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+# Getting Started with Twinaide-ui
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Twinaide-ui project is a react-based interface developed to manage and create interoperable digital twins.
 
-### `npm test`
+### Instal Dependencies
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+To download the libraries used in the twinaide-ui project, the `npm install` command should be run.
 
-### `npm run build`
+### Set config file
+Before starting the ui, a file named `.env` should be created under the root directory and the variable information that appears should be set.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```
+REACT_APP_TEST=hello
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+REACT_APP_API_URL = http://localhost:5000/api/
+REACT_APP_PYTHON_URL = http://localhost:5001/api
+REACT_APP_DT_VISUAL_FILES_URL = http://localhost:5000/uploads
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+REACT_APP_TWINBASE_URL = https://dtw.machinaide.twinbase.org/index.json
+REACT_APP_KMACK_URL = http://132.226.21.114:8011/api
+```
 
-### `npm run eject`
+### Start UI
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+To start the ui, `npm run start` command must be run in the root directory. After running the command the following output should be obtained.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
+Compiled successfully!
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+You can now view twinaide-ui in the browser.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+  Local:            http://localhost:3000
+  On Your Network:  http://192.168.1.104:3000
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Note that the development build is not optimized.
+To create a production build, use npm run build.
+```

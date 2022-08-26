@@ -3,7 +3,10 @@ import axios from "axios";
 import { NotificationManager } from 'react-notifications';
 
 // Types
-import { LOADING_DTs, GET_ALL_DTs, GET_DT, SET_SELECTED_NODE, SET_IMPORT_DT_FROM_TWINBASE_OVERLAY, GET_DTS_FROM_TWINBASE } from "./dtTypes";
+import {
+    LOADING_DTs, GET_ALL_DTs, GET_DT, SET_SELECTED_NODE, SET_IMPORT_DT_FROM_TWINBASE_OVERLAY,
+    GET_DTS_FROM_TWINBASE, SET_IMPORT_DT_FROM_KMACK_OVERLAY
+} from "./dtTypes";
 
 // Action Methods
 export const loadingDTs = (payload) => {
@@ -37,6 +40,13 @@ export const setSelectedNode = (payload) => {
 export const setImportDTFromTwinbaseOverlay = (payload) => {
     return {
         type: SET_IMPORT_DT_FROM_TWINBASE_OVERLAY,
+        payload
+    }
+}
+
+export const setImportDTFromKmackOverlay = (payload) => {
+    return {
+        type: SET_IMPORT_DT_FROM_KMACK_OVERLAY,
         payload
     }
 }

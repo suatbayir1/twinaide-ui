@@ -16,6 +16,7 @@ export const privacyTypes = [
 export const createOptions = [
     { key: "import", label: "Import Digital Twin" },
     { key: "import-twinbase", label: "Import DT From Twinbase" },
+    { key: "import-kmac", label: "Import DT From KMAC" },
 ]
 
 export const graphTypeList = [

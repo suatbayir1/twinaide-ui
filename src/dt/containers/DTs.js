@@ -10,7 +10,7 @@ import DTsContents from '../components/DTsContents';
 import DigitalTwinImportOverlay from '../overlays/DigitalTwinImportOverlay';
 
 // Actions
-import { fetchGetAllDTs, setImportDTFromTwinbaseOverlay } from "../../store";
+import { fetchGetAllDTs, setImportDTFromTwinbaseOverlay, setImportDTFromKmackOverlay } from "../../store";
 
 // Utilities
 import { filterDTsBySearchTerm, filterDTsByPrivacy } from "../../shared/utils/filter";
@@ -60,6 +60,10 @@ class DTs extends Component {
             case "import-twinbase":
                 console.log("clicked");
                 this.props.setImportDTFromTwinbaseOverlay(true);
+                break;
+            case "import-kmac":
+                console.log("kmac");
+                this.props.setImportDTFromKmackOverlay(true);
                 break;
             default:
                 break;
@@ -209,6 +213,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         fetchGetAllDTs: () => dispatch(fetchGetAllDTs()),
         setImportDTFromTwinbaseOverlay: (payload) => dispatch(setImportDTFromTwinbaseOverlay(payload)),
+        setImportDTFromKmackOverlay: (payload) => dispatch(setImportDTFromKmackOverlay(payload))
     };
 };
 
